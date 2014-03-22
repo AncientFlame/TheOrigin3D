@@ -28,6 +28,7 @@ public class Main extends SimpleApplication
        stateManager.attach(bullet);
        //inizializzazioni scena
        thread[0]=executor.submit(InitScene);
+       flyCam.setMoveSpeed(150f);
     }
 
     @Override
@@ -50,4 +51,11 @@ public class Main extends SimpleApplication
            return null; 
         }
     };
+    
+    @Override
+    public void destroy()
+    {
+      super.destroy();
+      executor.shutdown(); //stoppa i thread
+    }
 };
