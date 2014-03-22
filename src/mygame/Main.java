@@ -47,7 +47,7 @@ public class Main extends SimpleApplication
     {
         public Object call()
         {
-           scena=new Scene(assetManager,bullet,rootNode); 
+           scena=new Scene(assetManager,viewPort,bullet,rootNode); 
            return null; 
         }
     };
