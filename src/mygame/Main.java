@@ -46,6 +46,7 @@ public class Main extends SimpleApplication
        rootNode.attachChild(pg.model);
           
        flyCam.setEnabled(true);
+       flyCam.setMoveSpeed(0.0f);
        Vector3f app=pg.model.getLocalTranslation();
        cam.setLocation(new Vector3f(app.x,app.y+2,app.z-5));
        cam.setRotation(pg.model.getLocalRotation());
@@ -54,7 +55,7 @@ public class Main extends SimpleApplication
     @Override
     public void simpleUpdate(float tpf)
     {
-      
+      System.out.println(pg.gradi2);
     }
 
     @Override
@@ -91,7 +92,9 @@ public class Main extends SimpleApplication
            inputManager.addMapping("A",new KeyTrigger(KeyInput.KEY_A));
            inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso destra
            inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso sinistra
-           inputManager.addListener(PgMovement,"W","S","D","A","left","right");
+           inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
+           inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
+           inputManager.addListener(PgMovement,"W","S","D","A","left","right","up","down");
            return null;
        }
     };
@@ -101,25 +104,28 @@ public class Main extends SimpleApplication
         public void onAnalog(String name, float value, float tpf) 
         {
            if(name.equals("right")) //rotazione braccia verso destra
-           {
-              if(pg.gradi+1.5<=360) pg.gradi+=1.5; else pg.gradi=0; //1.5 gradi -> 45°/30 358.5 -> 360-1.5
-              Quaternion quad=pg.model.getLocalRotation();
-              quad.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi lungo l'asse y
-              pg.model.setLocalRotation(quad);
-              pg.setCamera(cam);
-           } else
+              if(pg.gradi+1.5<=360) pg.gradi+=1.5; else pg.gradi=0; //1.5 gradi -> 45°/30 
+
            if(name.equals("left")) //rotazione braccia verso sinistra
-           {
               if(pg.gradi-1.5>=0) pg.gradi-=0.75; else pg.gradi=360; 
-              Quaternion quad=pg.model.getLocalRotation();
-              quad.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi lungo l'asse y
-              pg.model.setLocalRotation(quad);
-              pg.setCamera(cam);
-           }
+
+           if(name.equals("up")) //rotazione braccia verso l'alto
+              if(pg.gradi2-0.75>=-25) pg.gradi2-=0.75;
+
+           if(name.equals("down")) //rotazione braccia verso il basso
+              if(pg.gradi2+0.75<=40) pg.gradi2+=0.75;
+
+           Quaternion quat=new Quaternion();
+           Quaternion quat2=new Quaternion();
+           quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
+           quat2.fromAngleAxis(FastMath.PI*pg.gradi2/180,Vector3f.UNIT_X);  //ruota il quaternione di pg.gradi2 sull'asse x
+           Quaternion quat3=quat.mult(quat2); //combina le rotazioni su y e su x in un terzo quaternione
+           pg.model.setLocalRotation(quat3);
+           cam.setRotation(pg.model.getLocalRotation());
+           Vector3f app=new Vector3f(0,-0.3f,-5);
+           cam.setLocation(pg.model.localToWorld(app,app));
         }          
     };
-    
-
     
     @Override
     public void destroy()

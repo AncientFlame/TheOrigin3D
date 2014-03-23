@@ -14,12 +14,11 @@ public class Player
   Spatial model; //modello 3d pg (braccia)
   CapsuleCollisionShape Shape;
   CharacterControl control;
-  int gradi;
-  
+  float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
   
    Player(AssetManager asset,BulletAppState bullet)
    {
-      gradi=0; 
+      gradi=0; gradi2=0;
       model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
@@ -34,11 +33,4 @@ public class Player
       Vector3f app=control.getPhysicsLocation();
       model.setLocalTranslation(new Vector3f(app.x,app.y+Shape.getHeight()*3f/4,app.z)); 
    }
-   
-   public void setCamera(Camera cam)
-   {
-      cam.setRotation(model.getLocalRotation());
-      Vector3f app=new Vector3f(0,-1f,-5);
-      cam.setLocation(model.localToWorld(app,app));
-   }   
 };

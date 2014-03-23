@@ -32,8 +32,6 @@ public class Scene
        
        //creo colore e lo metto come sfondo della visione
        ColorRGBA color = new ColorRGBA(0.15f,0.15f,1f,1f);
-       port.setBackgroundColor(color);
-       
-       
+       port.setBackgroundColor(color);    
     }
 };
