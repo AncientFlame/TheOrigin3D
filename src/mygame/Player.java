@@ -29,8 +29,8 @@ public class Player
       model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
-      control.setPhysicsLocation(new Vector3f(30,5,50)); //posizione character control
-      model.setLocalTranslation(30,5+Shape.getHeight()*3f/4,50); //y = 3/4 dell'altezza della capsula
+      control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
+      model.setLocalTranslation(10,5+Shape.getHeight()*3f/4,10); //y = 3/4 dell'altezza della capsula
       control.setGravity(98f); //gravità 
       bullet.getPhysicsSpace().add(control);
    }
