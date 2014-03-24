@@ -27,6 +27,8 @@ public class Main extends SimpleApplication
     public static void main(String[] args) 
     {
         Main app = new Main();
+        Settings sys = new Settings();
+        app.setSettings(sys.get_settings());
         app.start();
     }
     
