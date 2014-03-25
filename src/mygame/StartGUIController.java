@@ -4,7 +4,10 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioRenderer;
 import com.jme3.input.FlyByCamera;
+import com.jme3.input.InputManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -15,7 +18,13 @@ import de.lessvoid.nifty.screen.ScreenController;
 
 public class StartGUIController extends AbstractAppState implements ScreenController{
     private NiftyJmeDisplay nifty;
+    private NiftyJmeDisplay optionDisplay;
     private ViewPort viewPort;
+    private AssetManager man;
+    private InputManager inputManager;
+    private AudioRenderer audioRenderer;
+    
+    private OptionGUIController optionController;
     //private Screen screen;
     private SimpleApplication app;
     boolean menu=true;
@@ -24,13 +33,22 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     FlyByCamera flycam;
     
 
-    StartGUIController(AppStateManager stateManager, SimpleApplication app, ViewPort port,Main application,Node rootN,FlyByCamera fly) {
+    StartGUIController(AppStateManager stateManager, 
+                        AssetManager man,
+                        InputManager IOMan,
+                        AudioRenderer rederer,
+                        SimpleApplication app, 
+                        ViewPort port,
+                        Main application,
+                        Node rootN,
+                        FlyByCamera fly) {
         rootNode2=rootN;
         flycam=fly;
         appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
         viewPort = port; 
+        this.man = man;
     }    
  
     
@@ -52,6 +70,18 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public void update(float tpf) { 
       
     }
+    public void option(int x, int y){
+        
+        optionDisplay = new NiftyJmeDisplay( man, 
+                                             inputManager, 
+                                             audioRenderer,
+                                             viewPort);
+        
+        Nifty niftyOption = optionDisplay.getNifty();
+        niftyOption.fromXml("Interface/start.xml", "start", optionController);
+        viewPort.addProcessor(optionDisplay);
+        
+    }
     public void quitGame(int x, int y){
         app.stop();
     }
@@ -67,9 +97,9 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        
        rootNode2.attachChild(appl.scena.SceneModel);
        rootNode2.attachChild(appl.pg.model);
-       
        flycam.setDragToRotate(false);
        appl.thread[0]=null;
+       
        viewPort.removeProcessor(nifty);      
     }
 

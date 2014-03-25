@@ -30,7 +30,7 @@ public class Main extends SimpleApplication
     private BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
-    
+  
     //variabili per gestire i mob
     public Vector<Mob>mob;
     private int round; //round attuale
@@ -50,7 +50,7 @@ public class Main extends SimpleApplication
     @Override
     public void simpleInitApp()
     {   
-        startController = new StartGUIController(stateManager, app, guiViewPort,this,rootNode,flyCam);
+        startController = new StartGUIController(stateManager,assetManager,inputManager,audioRenderer, app, guiViewPort, this, rootNode, flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
         
