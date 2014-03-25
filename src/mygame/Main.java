@@ -234,8 +234,11 @@ public class Main extends SimpleApplication
         
     }
     private void initStartGUI(){
-        niftyDisplay = new NiftyJmeDisplay(
-        assetManager, inputManager, audioRenderer, guiViewPort);
+        niftyDisplay = new NiftyJmeDisplay( assetManager, 
+                                            inputManager, 
+                                            audioRenderer,
+                                            guiViewPort);
+        
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
         guiViewPort.addProcessor(niftyDisplay);

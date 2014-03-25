@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
-  <useStyles filename="nifty-default-styles.xml"/>
-  <useControls filename="nifty-default-controls.xml"/>
-  
+    
+<useStyles filename="nifty-default-styles.xml"/>
+<useControls filename="nifty-default-controls.xml"/>
   
   <screen controller="mygame.StartGUIController" id="start">
     <layer childLayout="absolute" id="layer">
       <panel childLayout="absolute" height="100%" id="panel1" style="nifty-panel-simple" width="100%" x="0" y="0">
+          
+        <image filename="Interface/StartImage/Locandina.jpg" height="389px" id="title" width="431px" x="319px" y="112px"/>
+        <image filename="Interface/StartImage/Title.jpg" height="75px" id="locanda" width="489px" x="161px" y="19px"/>
+        
         <panel childLayout="absolute" height="380px" id="panel4" style="nifty-panel-simple" width="228px" x="47" y="114px">
-            <control childLayout="center" height="8%" id="Start" label="start" name="button" width="60%" x="45" y="60">
-                <interact onClick="startGame()"/>
+            <control childLayout="center" height="8%" id="Start" label="Start" name="button" width="60%" x="45" y="60">
+                 <interact onClick="startGame()"/>
             </control>
-            <control childLayout="center" height="8%" id="button2" label="button2" name="button" width="60%" x="45" y="200">
-                <interact onClick="option()"/>
+            <control childLayout="center" height="8%" id="Option" label="Option" name="button" width="60%" x="45" y="200">
+                 <interact onClick="option()"/>
             </control>
-            <control childLayout="center" height="8%" id="button1" label="button1" name="button" width="60%" x="45" y="130">
+            <control childLayout="center" height="8%" id="Quit" label="Quir" name="button" width="60%" x="45" y="130">
                 <interact onClick="quitGame()"/>
             </control>
         </panel>
-        <image filename="Interface/StartImage/Locandinajpg" height="389px" id="image1" width="431px" x="319" y="112px"/>
-        <image filename="Interface/StartImage/Title.png" height="75px" id="image3" width="489px" x="161px" y="19"/>
+        
       </panel>
     </layer>
   </screen>

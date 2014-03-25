@@ -32,7 +32,7 @@ public final class Settings {
         system.setUseInput(true);
         system.setFrameRate(60);
         system.setStereo3D(false);
-  
+        system.setResolution(800,600);
         //system.setSettingsDialogImage("Interface/SplashScreen.jpg");
         system.setSamples(0);
     }
