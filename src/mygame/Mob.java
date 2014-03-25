@@ -12,7 +12,6 @@ public class Mob
   Spatial model;
   CharacterControl control;
   CapsuleCollisionShape Shape;
-  Vector3f spawn;
   
   Mob(AssetManager asset,BulletAppState bullet,Vector3f spawnPoint)
   {
@@ -24,7 +23,6 @@ public class Mob
     model.setLocalTranslation(control.getPhysicsLocation()); 
     control.setGravity(98f); //gravità 
     bullet.getPhysicsSpace().add(control);   
-    spawn=spawnPoint;
   }
   
 };
