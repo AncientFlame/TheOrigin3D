@@ -59,7 +59,7 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       r_mob=round=1; n_mob=0;
+       r_mob=round=100; n_mob=0;
        flyCam.setEnabled(true);
        flyCam.setMoveSpeed(0.0f); 
     }
@@ -68,19 +68,21 @@ public class Main extends SimpleApplication
     public void simpleUpdate(float tpf)
     { 
        if(startController.menu==false)
-       {
+       { 
          pgMov(); //movimento character control thread[0]
+         
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
            mobCreate(); //crea un mob
+    
          if(r_mob>0) //ci sono mob vivi
          {
            mobFollowPg();  
-           collisionMobPg();
-         }
-         pg.FirstPersonCamera(cam);
+           collisionMobPg(); //collisioni mob-pg thread[1]
+         } 
+         
        }
     }
-
+    
     @Override
     public void simpleRender(RenderManager rm) 
     {  
@@ -131,6 +133,7 @@ public class Main extends SimpleApplication
          Vector3f app3=pg.control.getPhysicsLocation(); //settata nuova posizione delle braccia
          pg.model.setLocalTranslation(new Vector3f(app3.x,app3.y+pg.Shape.getHeight()*3f/4,app3.z)); 
          thread[0]=null; //il future viene rimesso a null
+         pg.FirstPersonCamera(cam);
        }
     }
  //--------------------------listener   
@@ -174,6 +177,7 @@ public class Main extends SimpleApplication
            quat2.fromAngleAxis(FastMath.PI*pg.gradi2/180,Vector3f.UNIT_X);  //ruota il quaternione di pg.gradi2 sull'asse x
            pg.rot=quat.mult(quat2); //combina le rotazioni su y e su x in un terzo quaternione 
            pg.model.setLocalRotation(pg.rot);  
+           pg.FirstPersonCamera(cam);
         }         
     };
     
