@@ -26,7 +26,7 @@ public final class Settings {
     */
     public void set_default_settings(){
       
-        //set_icon_image();
+        set_icon_image();
        
         system.setTitle(Title);
         system.setUseInput(true);
@@ -53,10 +53,10 @@ public final class Settings {
     private void set_icon_image(){
         try {
             system.setIcons(new BufferedImage[]{
-                    ImageIO.read(getClass().getResourceAsStream("/Interface/game_icon256.bmp")),
-                    ImageIO.read(getClass().getResourceAsStream("/Interface/game_icon128.bmp")),
-                    ImageIO.read(getClass().getResourceAsStream("/Interface/game_icon32.bmp")),
-                    ImageIO.read(getClass().getResourceAsStream("/Interface/game_icon16.bmp")),
+                    ImageIO.read(getClass().getResourceAsStream("/Interface/IconImage/IconImage256.jpg")),
+                    ImageIO.read(getClass().getResourceAsStream("/Interface/IconImage/IconImage128.jpg")),
+                    ImageIO.read(getClass().getResourceAsStream("/Interface/IconImage/IconImage32.jpg")),
+                    ImageIO.read(getClass().getResourceAsStream("/Interface/IconImage/IconImage16.jpg")),
             });
         } catch (IOException e) {
             System.out.println(e);
