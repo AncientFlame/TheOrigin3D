@@ -6,6 +6,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
 
 
@@ -34,6 +35,13 @@ public class Player
       model.setLocalTranslation(10,5+Shape.getHeight()*3f/4,10); //y = 3/4 dell'altezza della capsula
       control.setGravity(98f); //gravità 
       bullet.getPhysicsSpace().add(control);
+   }
+   
+   void FirstPersonCamera(Camera cam)
+   {
+       cam.setRotation(model.getLocalRotation()); 
+       cam_pos.set(0,-0.3f,-5); 
+       cam.setLocation(model.localToWorld(cam_pos,cam_pos));
    }
       
 };

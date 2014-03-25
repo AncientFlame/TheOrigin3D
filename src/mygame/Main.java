@@ -50,7 +50,7 @@ public class Main extends SimpleApplication
     @Override
     public void simpleInitApp()
     {   
-        startController = new StartGUIController(stateManager, app, guiViewPort,this,rootNode);
+        startController = new StartGUIController(stateManager, app, guiViewPort,this,rootNode,flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
         
@@ -73,6 +73,7 @@ public class Main extends SimpleApplication
            mobCreate(); //crea un mob
          if(r_mob>0) //ci sono mob vivi
             mobFollowPg();  
+         pg.FirstPersonCamera(cam);
        }
     }
 
@@ -125,10 +126,6 @@ public class Main extends SimpleApplication
          pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
          Vector3f app3=pg.control.getPhysicsLocation(); //settata nuova posizione delle braccia
          pg.model.setLocalTranslation(new Vector3f(app3.x,app3.y+pg.Shape.getHeight()*3f/4,app3.z)); 
-         //posizione e rotazione camera
-         cam.setRotation(pg.model.getLocalRotation()); 
-         pg.cam_pos.set(0,-0.3f,-5); 
-         cam.setLocation(pg.model.localToWorld(pg.cam_pos,pg.cam_pos));
          thread[0]=null; //il future viene rimesso a null
        }
     }
@@ -173,10 +170,6 @@ public class Main extends SimpleApplication
            quat2.fromAngleAxis(FastMath.PI*pg.gradi2/180,Vector3f.UNIT_X);  //ruota il quaternione di pg.gradi2 sull'asse x
            pg.rot=quat.mult(quat2); //combina le rotazioni su y e su x in un terzo quaternione 
            pg.model.setLocalRotation(pg.rot);  
-           //posizione e rotazione camera
-           cam.setRotation(pg.model.getLocalRotation()); 
-           pg.cam_pos.set(0,-0.3f,-5); 
-           cam.setLocation(pg.model.localToWorld(pg.cam_pos,pg.cam_pos));
         }         
     };
     

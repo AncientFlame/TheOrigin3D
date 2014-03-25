@@ -1,13 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package mygame;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.input.FlyByCamera;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -15,10 +12,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 
-/**
- *
- * @author Lorenzo
- */
+
 public class StartGUIController extends AbstractAppState implements ScreenController{
     private NiftyJmeDisplay nifty;
     private ViewPort viewPort;
@@ -27,10 +21,12 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     boolean menu=true;
     Main appl;
     Node rootNode2;
+    FlyByCamera flycam;
     
 
-    StartGUIController(AppStateManager stateManager, SimpleApplication app, ViewPort port,Main application,Node rootN) {
+    StartGUIController(AppStateManager stateManager, SimpleApplication app, ViewPort port,Main application,Node rootN,FlyByCamera fly) {
         rootNode2=rootN;
+        flycam=fly;
         appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
@@ -54,7 +50,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
  
     @Override
     public void update(float tpf) { 
-      /** jME update loop! */ 
+      
     }
     public void quitGame(int x, int y){
         app.stop();
@@ -72,6 +68,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        rootNode2.attachChild(appl.scena.SceneModel);
        rootNode2.attachChild(appl.pg.model);
        
+       flycam.setDragToRotate(false);
        appl.thread[0]=null;
        viewPort.removeProcessor(nifty);      
     }
