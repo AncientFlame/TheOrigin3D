@@ -70,8 +70,8 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     }
     public void option(int x, int y){
         viewPort.removeProcessor(nifty);
-        nifty.notify();
         Nifty niftyOption = nifty.getNifty();
+        
         niftyOption.fromXml("Interface/option.xml", "start", optionController);
         viewPort.addProcessor(nifty);
         
