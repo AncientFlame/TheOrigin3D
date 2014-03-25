@@ -11,7 +11,9 @@ import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
+import de.lessvoid.nifty.Nifty;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -20,23 +22,26 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main extends SimpleApplication 
 {
-    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
-    Future thread[]=new Future[10];
-    BulletAppState bullet; //serve per la fisica
-    Scene scena; //scena principale del gioco
-    Player pg;
+    private NiftyJmeDisplay niftyDisplay;
+    private StartGUIController startController;
+    
+    private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
+    private Future thread[]=new Future[10];
+    private BulletAppState bullet; //serve per la fisica
+    private Scene scena; //scena principale del gioco
+    private Player pg;
     
     //variabili per gestire i mob
-    Vector<Mob>mob;
-    int round; //round attuale
-    int n_mob; //numero mob creati
-    int r_mob; //mob rimasti 
-    Vector3f spawnPoint[]=new Vector3f[4];
-    
+    private Vector<Mob>mob;
+    private int round; //round attuale
+    private int n_mob; //numero mob creati
+    private int r_mob; //mob rimasti 
+    private Vector3f spawnPoint[]=new Vector3f[4];
+    private static Main app;
     
     public static void main(String[] args) 
     {
-        Main app = new Main();
+        app = new Main();
         Settings sys = new Settings();
         app.setSettings(sys.get_settings());
         app.start();
@@ -44,7 +49,12 @@ public class Main extends SimpleApplication
     
     @Override
     public void simpleInitApp()
-    {
+    {   
+        startController = new StartGUIController(stateManager, app, guiViewPort);
+        
+        //sunpos = new Vector3f(0,0,1000);
+        initStartGUI();
+        startController.setNifty(niftyDisplay);
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
@@ -223,7 +233,14 @@ public class Main extends SimpleApplication
     {
         
     }
-    
+    private void initStartGUI(){
+        niftyDisplay = new NiftyJmeDisplay(
+        assetManager, inputManager, audioRenderer, guiViewPort);
+        Nifty nifty = niftyDisplay.getNifty();
+        nifty.fromXml("Interface/start.xml", "start", startController);
+        guiViewPort.addProcessor(niftyDisplay);
+        flyCam.setDragToRotate(true);
+    }
     @Override
     public void destroy()
     {
