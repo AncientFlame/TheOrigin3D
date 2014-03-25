@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<nifty>
+  <useStyles filename="nifty-default-styles.xml"/>
+  <useControls filename="nifty-default-controls.xml"/>
+  <screen id="screen1">
+    <layer childLayout="absolute" id="layer0">
+      <panel childLayout="absolute" height="100%" id="panel0" style="nifty-panel-simple" width="100%" x="0" y="0">
+        <image filename="./res/noImage.png" height="88px" id="Title" width="372px" x="215" y="16"/>
+        <panel childLayout="absolute" height="414px" id="panel2" style="nifty-panel-simple" width="681px" x="55" y="129">
+          <image filename="./res/noImage.png" height="61px" id="Music" width="193px" x="36" y="50"/>
+          <image filename="./res/noImage.png" height="61" id="SFX" width="193" x="36" y="140"/>
+          <image filename="./res/noImage.png" height="61" id="image4" width="193" x="36" y="230"/>
+          <control id="checkbox0" name="checkbox" x="348" y="70"/>
+          <control id="checkbox2" name="checkbox" x="348" y="250"/>
+          <control id="checkbox1" name="checkbox" x="348" y="155"/>
+          
+          <control font="aurulent-sans-16.fnt" height="36px" id="label4" name="label" text="label4" width="163px" x="442px" y="154"/>
+          <control font="aurulent-sans-16.fnt" height="36px" id="label3" name="label" text="label3" width="163px" x="442" y="67"/>
+          <control font="aurulent-sans-16.fnt" height="36px" id="label5" name="label" text="label5" width="163px" x="442px" y="245"/>
+        </panel>
+      </panel>
+    </layer>
+  </screen>
+</nifty>

@@ -15,10 +15,10 @@
             <control childLayout="center" height="8%" id="Start" label="Start" name="button" width="60%" x="45" y="60">
                  <interact onClick="startGame()"/>
             </control>
-            <control childLayout="center" height="8%" id="Option" label="Option" name="button" width="60%" x="45" y="200">
+            <control childLayout="center" height="8%" id="Option" label="Option" name="button" width="60%" x="45" y="130">
                  <interact onClick="option()"/>
             </control>
-            <control childLayout="center" height="8%" id="Quit" label="Quir" name="button" width="60%" x="45" y="130">
+            <control childLayout="center" height="8%" id="Quit" label="Quit" name="button" width="60%" x="45" y="200">
                 <interact onClick="quitGame()"/>
             </control>
         </panel>
