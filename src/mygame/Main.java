@@ -227,8 +227,10 @@ public class Main extends SimpleApplication
         
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
+        
         guiViewPort.addProcessor(niftyDisplay);
         flyCam.setDragToRotate(true);
+        
     }
     
     @Override

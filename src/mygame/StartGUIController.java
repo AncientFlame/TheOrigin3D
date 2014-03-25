@@ -18,11 +18,10 @@ import de.lessvoid.nifty.screen.ScreenController;
 
 public class StartGUIController extends AbstractAppState implements ScreenController{
     private NiftyJmeDisplay nifty;
-    private NiftyJmeDisplay optionDisplay;
+
     private ViewPort viewPort;
-    private AssetManager man;
-    private InputManager inputManager;
-    private AudioRenderer audioRenderer;
+    
+
     
     private OptionGUIController optionController;
     //private Screen screen;
@@ -47,8 +46,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
-        viewPort = port; 
-        this.man = man;
+        viewPort = port;
     }    
  
     
@@ -71,15 +69,11 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
       
     }
     public void option(int x, int y){
-        
-        optionDisplay = new NiftyJmeDisplay( man, 
-                                             inputManager, 
-                                             audioRenderer,
-                                             viewPort);
-        
-        Nifty niftyOption = optionDisplay.getNifty();
+        viewPort.removeProcessor(nifty);
+        nifty.notify();
+        Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/option.xml", "start", optionController);
-        viewPort.addProcessor(optionDisplay);
+        viewPort.addProcessor(nifty);
         
     }
     public void quitGame(int x, int y){
