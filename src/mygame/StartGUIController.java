@@ -78,7 +78,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
                                              viewPort);
         
         Nifty niftyOption = optionDisplay.getNifty();
-        niftyOption.fromXml("Interface/start.xml", "start", optionController);
+        niftyOption.fromXml("Interface/option.xml", "start", optionController);
         viewPort.addProcessor(optionDisplay);
         
     }
