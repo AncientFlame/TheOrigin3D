@@ -51,10 +51,9 @@ public class Main extends SimpleApplication
     public void simpleInitApp()
     {   
         startController = new StartGUIController(stateManager, app, guiViewPort);
-        
-        //sunpos = new Vector3f(0,0,1000);
         initStartGUI();
-        startController.setNifty(niftyDisplay);
+       // startController.setNifty(niftyDisplay);
+        
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
@@ -241,8 +240,8 @@ public class Main extends SimpleApplication
         
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
-        guiViewPort.addProcessor(niftyDisplay);
-        flyCam.setDragToRotate(true);
+        //guiViewPort.addProcessor(niftyDisplay);
+        //flyCam.setDragToRotate(true);
     }
     @Override
     public void destroy()
