@@ -2,6 +2,7 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -72,7 +73,10 @@ public class Main extends SimpleApplication
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
            mobCreate(); //crea un mob
          if(r_mob>0) //ci sono mob vivi
-            mobFollowPg();  
+         {
+           mobFollowPg();  
+           collisionMobPg();
+         }
          pg.FirstPersonCamera(cam);
        }
     }
@@ -213,10 +217,39 @@ public class Main extends SimpleApplication
        n_mob++;
     }
     
-    private void mobFollowPg()
+    private void mobFollowPg() 
     {
-        
+      
     }
+    
+    private void collisionMobPg() //usa thread[1]
+    {
+      if(thread[1]==null)
+       thread[1]=executor.submit(collisionMobPg_thread);
+      else
+        if(thread[1].isDone())
+        {
+          if(pg.healt<=0)
+            System.out.println("lose");
+          thread[1]=null;  
+        }    
+    }
+    
+    private Callable collisionMobPg_thread=new Callable() //usa thread[1]
+    {
+      public Object call()
+      {
+         CollisionResults result=new CollisionResults(); 
+         for(int i=0; i<mob.capacity(); i++)
+         {
+            pg.FirstPersonCamera(cam);
+            mob.elementAt(i).model.collideWith(pg.model.getWorldBound(),result); 
+            if(result.size()>0)
+              pg.healt-=mob.elementAt(i).attack;
+         }
+         return null; 
+      }
+    };
 
 //----------------------gui    
     private void initStartGUI(){

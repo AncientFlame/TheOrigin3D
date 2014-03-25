@@ -20,11 +20,13 @@ public class Player
   Vector3f cam_pos; //posizione camera
   Quaternion rot; //rotazione pg
   boolean w,a,s,d; 
+  int healt;
   
    Player(AssetManager asset,BulletAppState bullet)
    {
       gradi=gradi2=0;
       w=a=s=d=false;
+      healt=100;
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
       model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
