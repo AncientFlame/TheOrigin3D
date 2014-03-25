@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<nifty>
+  <useStyles filename="nifty-default-styles.xml"/>
+  <useControls filename="nifty-default-controls.xml"/>
+  <screen id="screen0">
+    <layer childLayout="absolute" id="layer0"/>
+    <layer childLayout="absolute" id="layer1"/>
+    <layer childLayout="absolute" id="layer2">
+      <panel childLayout="absolute" height="100%" id="panel1" style="nifty-panel-simple" width="100%" x="0" y="0">
+        <panel childLayout="absolute" height="380px" id="panel4" style="nifty-panel-simple" width="228px" x="47" y="114px">
+          <control childLayout="center" height="8%" id="button0" label="button0" name="button" width="60%" x="45" y="60"/>
+          <control childLayout="center" height="8%" id="button2" label="button2" name="button" width="60%" x="45" y="200"/>
+          <control childLayout="center" height="8%" id="button1" label="button1" name="button" width="60%" x="45" y="130"/>
+        </panel>
+        <image filename="./res/noImage.png" height="389px" id="image1" width="431px" x="319" y="112px"/>
+        <image filename="./res/noImage.png" height="75px" id="image3" width="489px" x="161px" y="19"/>
+      </panel>
+    </layer>
+  </screen>
+  <screen id="screen1"/>
+</nifty>
