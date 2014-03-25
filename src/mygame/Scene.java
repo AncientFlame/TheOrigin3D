@@ -21,8 +21,8 @@ public class Scene
     {
        Material mat=new Material(assetManager ,"Common/MatDefs/Misc/Unshaded.j3md"); //da levare quando ci saranno le texture
        mat.setColor("Color",ColorRGBA.Green); //da levare quando ci saranno le texture
-       SceneModel=assetManager.loadModel("Models/untitled/untitled.j3o"); //carica modello 
-       
+       SceneModel=assetManager.loadModel("Models/mappa1/mappa1.j3o"); //carica modello 
+       SceneModel.setName("Scena"); //serve per le collisioni
        SceneModel.setMaterial(mat); //da levare quando ci saranno le texture
        
        SceneShape=CollisionShapeFactory.createMeshShape(SceneModel); //crea collision shape prendendo forma del modello della scena

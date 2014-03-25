@@ -27,6 +27,7 @@ public class Player
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
       model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
+      model.setName("Pg"); //serve per le collisioni
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
       control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
@@ -34,4 +35,5 @@ public class Player
       control.setGravity(98f); //gravità 
       bullet.getPhysicsSpace().add(control);
    }
+      
 };

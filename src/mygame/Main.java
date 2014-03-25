@@ -12,6 +12,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -23,6 +24,12 @@ public class Main extends SimpleApplication
     BulletAppState bullet; //serve per la fisica
     Scene scena; //scena principale del gioco
     Player pg;
+    Vector<Mob>mob;
+    //variabili per gestire i mob
+    int round; //round attuale
+    int n_mob; //numero mob creati
+    int r_mob; //mob rimasti 
+    
     
     public static void main(String[] args) 
     {
@@ -47,21 +54,23 @@ public class Main extends SimpleApplication
        
        rootNode.attachChild(scena.SceneModel);
        rootNode.attachChild(pg.model);
-          
+       
+       r_mob=round=1; n_mob=0;
        flyCam.setEnabled(true);
        flyCam.setMoveSpeed(0.0f);
     }
 
     @Override
     public void simpleUpdate(float tpf)
-    {
-      pgMov(); //movimento character control thread[0]
+    { 
+        pgMov(); //movimento character control thread[0]
+        if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
+          mobCreate(); //crea un mob 
     }
 
     @Override
     public void simpleRender(RenderManager rm) 
     {  
-
     }
       
     private Callable InitScene=new Callable() //thread per la scena   
@@ -102,16 +111,27 @@ public class Main extends SimpleApplication
     
     private Callable pgMov_thread=new Callable() //thread per calcolare l'incremento del vettore posizione 
     {
-        public Object call()
+        public Object call() 
         {  
-           Vector3f app=cam.getDirection().multLocal(0.6f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
-           Vector3f app2=cam.getLeft().multLocal(0.4f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
+           Vector3f app=cam.getDirection().clone().multLocal(0.9f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
+           Vector3f app2=cam.getLeft().clone().multLocal(0.7f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
            pg.pos.set(0,0,0); //viene inizializzato il vettore a 0
            if(pg.w) pg.pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
            if(pg.s) pg.pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)
            if(pg.a) pg.pos.addLocal(app2); //se a è premuto si somma al vettore pos il vettore app2 (aumenta x)
            if(pg.d) pg.pos.addLocal(app2.negate()); //se d è premuto si sottrae al vettore pos il vettore app2 (diminuisce x)
+           
            return 1; 
+        }
+    };
+    
+    private Callable mobCreate_thread=new Callable() //crea mob
+    {
+        public Object call()
+        {
+          mob.add(new Mob(assetManager,bullet,new Vector3f(0,0,0)));
+          //n_mob++;
+          return 1;  
         }
     };
     
@@ -126,10 +146,10 @@ public class Main extends SimpleApplication
               if(pg.gradi-1.5>=0) pg.gradi-=1.5; else pg.gradi=360; 
 
            if(name.equals("up")) //rotazione braccia verso l'alto
-              if(pg.gradi2-0.4>=-25) pg.gradi2-=0.4;
+              if(pg.gradi2-0.55>=-25) pg.gradi2-=0.55;
 
            if(name.equals("down")) //rotazione braccia verso il basso
-              if(pg.gradi2+0.4<=40) pg.gradi2+=0.4;
+              if(pg.gradi2+0.55<=40) pg.gradi2+=0.55;
 
            Quaternion quat=new Quaternion();
            Quaternion quat2=new Quaternion();
@@ -141,7 +161,7 @@ public class Main extends SimpleApplication
            cam.setRotation(pg.model.getLocalRotation()); 
            pg.cam_pos.set(0,-0.3f,-5); 
            cam.setLocation(pg.model.localToWorld(pg.cam_pos,pg.cam_pos));
-        }          
+        }         
     };
     
     private ActionListener PgMovement2=new ActionListener() //action listener gestione WASD
@@ -149,10 +169,10 @@ public class Main extends SimpleApplication
         public void onAction(String key,boolean pressed,float tpf)
         {
             if(key.equals("W"))
-              pg.w=pressed;
+             pg.w=pressed; 
 
             if(key.equals("S"))
-              pg.s=pressed;
+             pg.s=pressed; 
 
             if(key.equals("D"))
               pg.d=pressed;
@@ -178,6 +198,15 @@ public class Main extends SimpleApplication
          cam.setLocation(pg.model.localToWorld(pg.cam_pos,pg.cam_pos));
          thread[0]=null; //il future viene rimesso a null
        }
+    }
+    
+    private void mobCreate() //gestisce la creazione dei mob (usa il future thread[1])
+    {
+      if(thread[1]==null) //future null 
+       thread[1]=executor.submit(mobCreate_thread);
+      else
+        if(thread[1].isDone())
+        { n_mob++;  thread[1]=null; System.out.println(n_mob); }       
     }
     
     @Override
