@@ -10,6 +10,7 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
@@ -24,12 +25,16 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     //private Screen screen;
     private SimpleApplication app;
     boolean menu=true;
+    Main appl;
+    Node rootNode2;
     
 
-    StartGUIController(AppStateManager stateManager, SimpleApplication app, ViewPort port) {
+    StartGUIController(AppStateManager stateManager, SimpleApplication app, ViewPort port,Main application,Node rootN) {
+        rootNode2=rootN;
+        appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
-        viewPort = port;
+        viewPort = port; 
     }    
  
     
@@ -55,8 +60,20 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         app.stop();
     }
     public void startGame(int x, int y){
-        this.menu=false;
-        viewPort.removeProcessor(nifty);      
+        this.menu=false;  
+        //inizializzazioni scena
+       appl.thread[0]=appl.executor.submit(appl.InitScene);
+       appl.thread[1]=appl.executor.submit(appl.InitPg);
+       appl.thread[2]=appl.executor.submit(appl.InitKeys);
+       appl.thread[3]=appl.executor.submit(appl.InitVectorMob);
+//aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
+       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone()) {}
+       
+       rootNode2.attachChild(appl.scena.SceneModel);
+       rootNode2.attachChild(appl.pg.model);
+       
+       appl.thread[0]=null;
+       viewPort.removeProcessor(nifty);      
     }
 
     public void bind(Nifty nifty, Screen screen) {

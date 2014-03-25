@@ -25,14 +25,14 @@ public class Main extends SimpleApplication
     private NiftyJmeDisplay niftyDisplay;
     private StartGUIController startController;
     
-    private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
-    private Future thread[]=new Future[10];
+    public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
+    public Future thread[]=new Future[10]; 
     private BulletAppState bullet; //serve per la fisica
-    private Scene scena; //scena principale del gioco
-    private Player pg;
+    public Scene scena; //scena principale del gioco
+    public Player pg;
     
     //variabili per gestire i mob
-    private Vector<Mob>mob;
+    public Vector<Mob>mob;
     private int round; //round attuale
     private int n_mob; //numero mob creati
     private int r_mob; //mob rimasti 
@@ -50,38 +50,30 @@ public class Main extends SimpleApplication
     @Override
     public void simpleInitApp()
     {   
-        startController = new StartGUIController(stateManager, app, guiViewPort);
+        startController = new StartGUIController(stateManager, app, guiViewPort,this,rootNode);
         initStartGUI();
-       // startController.setNifty(niftyDisplay);
+        startController.setNifty(niftyDisplay);
         
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
-       //inizializzazioni scena
-       thread[0]=executor.submit(InitScene);
-       thread[1]=executor.submit(InitPg);
-       thread[2]=executor.submit(InitKeys);
-       thread[3]=executor.submit(InitVectorMob);
-//aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
-       while(!thread[0].isDone() || !thread[1].isDone() || !thread[2].isDone() || !thread[3].isDone()) {}
        
-       rootNode.attachChild(scena.SceneModel);
-       rootNode.attachChild(pg.model);
-       
-       thread[0]=null;
        r_mob=round=1; n_mob=0;
        flyCam.setEnabled(true);
-       flyCam.setMoveSpeed(0.0f);
+       flyCam.setMoveSpeed(0.0f); 
     }
 
     @Override
     public void simpleUpdate(float tpf)
     { 
-        pgMov(); //movimento character control thread[0]
-        if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
-          mobCreate(); //crea un mob
-        if(r_mob>0) //ci sono mob vivi
-          mobFollowPg();  
+       if(startController.menu==false)
+       {
+         pgMov(); //movimento character control thread[0]
+         if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
+           mobCreate(); //crea un mob
+         if(r_mob>0) //ci sono mob vivi
+            mobFollowPg();  
+       }
     }
 
     @Override
@@ -89,7 +81,7 @@ public class Main extends SimpleApplication
     {  
     }
 //---------------------scena      
-    private Callable InitScene=new Callable() //thread per la scena   
+    public Callable InitScene=new Callable() //thread per la scena   
     {
         public Object call()
         {
@@ -98,7 +90,7 @@ public class Main extends SimpleApplication
         }
     };
 //---------------------pg    
-    private Callable InitPg=new Callable() //thread per il pg
+    public Callable InitPg=new Callable() //thread per il pg
     {
       public Object call()
       {
@@ -141,7 +133,7 @@ public class Main extends SimpleApplication
        }
     }
  //--------------------------listener   
-    private Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
+    public Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
     {
        public Object call()
        {
@@ -207,7 +199,7 @@ public class Main extends SimpleApplication
     };
  //-----------------------mob   
     
-    private Callable InitVectorMob=new Callable() //thread per il vettore di mob
+    public Callable InitVectorMob=new Callable() //thread per il vettore di mob
     {
       public Object call()
       {
@@ -232,6 +224,8 @@ public class Main extends SimpleApplication
     {
         
     }
+
+//----------------------gui    
     private void initStartGUI(){
         niftyDisplay = new NiftyJmeDisplay( assetManager, 
                                             inputManager, 
@@ -240,9 +234,10 @@ public class Main extends SimpleApplication
         
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
-        //guiViewPort.addProcessor(niftyDisplay);
-        //flyCam.setDragToRotate(true);
+        guiViewPort.addProcessor(niftyDisplay);
+        flyCam.setDragToRotate(true);
     }
+    
     @Override
     public void destroy()
     {
