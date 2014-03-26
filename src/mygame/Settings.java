@@ -32,8 +32,8 @@ public final class Settings {
         system.setUseInput(true);
         system.setFrameRate(60);
         system.setStereo3D(false);
-        system.setFullscreen(true);
-        system.setResolution(1600, 900);
+        system.setFullscreen(false);
+        system.setResolution(1280, 700);
         //system.setSettingsDialogImage("Interface/SplashScreen.jpg");
         system.setSamples(0);
     }
