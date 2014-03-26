@@ -50,16 +50,20 @@ public class OptionGUIController extends AbstractAppState implements ScreenContr
         
     }
     
-    public void Music(){
+    public void Music(int x, int y){
         music = !music;
     }
-    public void SFX(){
+    public void SFX(int x, int y){
         sfx = !sfx;
+        
     }
-    public void Audio3D(){
+    public void Audio3D(int x, int y){
         audio3D = !audio3D;
+        Settings.system.setStereo3D(audio3D);
     }
+    public void quit(int x, int y){
     
+    }
     
     public void initialize(AppStateManager stateManager, SimpleApplication app) {
         super.initialize(stateManager, app);

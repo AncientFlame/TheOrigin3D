@@ -32,7 +32,8 @@ public final class Settings {
         system.setUseInput(true);
         system.setFrameRate(60);
         system.setStereo3D(false);
-        system.setResolution(800,600);
+        system.setFullscreen(true);
+        system.setResolution(1600, 900);
         //system.setSettingsDialogImage("Interface/SplashScreen.jpg");
         system.setSamples(0);
     }
@@ -43,7 +44,12 @@ public final class Settings {
     public void set_resolution(int width, int height ){
         system.setResolution(width, height);
     }
-    
+    public float getResolutionHeight(){
+        return system.getHeight();
+    }
+    public float getResolutionWidth(){
+        return system.getWidth();
+    }
     /**
      * Restituisce le impostazioni
     */
@@ -62,4 +68,5 @@ public final class Settings {
             System.out.println(e);
         }
     }
+    
 }

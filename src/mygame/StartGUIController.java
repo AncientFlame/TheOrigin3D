@@ -71,15 +71,13 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
       
     }
     public void option(int x, int y){
-        viewPort.removeProcessor(nifty);
-        
         Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/option.xml", "start", optionController);
-        
+        niftyOption.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
         viewPort.addProcessor(nifty);
-        
     }
     public void quitGame(int x, int y){
+        nifty.cleanup();
         app.stop();
     }
     public void startGame(int x, int y){

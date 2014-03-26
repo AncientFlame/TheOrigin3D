@@ -14,6 +14,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
+import com.jme3.system.JmeContext;
 import de.lessvoid.nifty.Nifty;
 import java.util.Random;
 import java.util.Vector;
@@ -46,7 +47,7 @@ public class Main extends SimpleApplication
         app = new Main();
         Settings sys = new Settings();
         app.setSettings(sys.get_settings());
-        app.start();
+        app.start(JmeContext.Type.Display);
     }
     
     @Override
@@ -265,6 +266,7 @@ public class Main extends SimpleApplication
     private void initStartGUI(){
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
+        nifty.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
         guiViewPort.addProcessor(niftyDisplay);
         flyCam.setDragToRotate(true);
     }
