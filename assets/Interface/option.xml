@@ -25,12 +25,13 @@
               <interact onClick="Audio3D()"></interact>
           </control>
           
-          
+          <!--
           <control font="aurulent-sans-16.fnt" height="36px" id="label4" name="label" text="label4" width="163px" x="442px" y="154"/>
           <control font="aurulent-sans-16.fnt" height="36px" id="label3" name="label" text="label3" width="163px" x="442" y="67"/>
           <control font="aurulent-sans-16.fnt" height="36px" id="label5" name="label" text="label5" width="163px" x="442px" y="245"/>
+          -->
           <control childLayout="center" height="8%" id="Option" label="Option" name="button" width="30%" x="50%" y="400">
-                 <interact onClick="option()"/>
+                 <interact onClick="quit()"/>
           </control>
         </panel>
       </panel>

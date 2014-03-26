@@ -47,6 +47,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
         viewPort = port;
+        
     }    
  
     
@@ -70,9 +71,10 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     }
     public void option(int x, int y){
         viewPort.removeProcessor(nifty);
-        Nifty niftyOption = nifty.getNifty();
         
+        Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/option.xml", "start", optionController);
+        
         viewPort.addProcessor(nifty);
         
     }
@@ -103,6 +105,5 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
 
     public void setNifty(NiftyJmeDisplay niftyDisplay) {
          nifty = niftyDisplay;
-        
     }
 }
