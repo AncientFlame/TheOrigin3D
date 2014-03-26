@@ -25,6 +25,7 @@ public class Main extends SimpleApplication
 {
     private NiftyJmeDisplay niftyDisplay;
     private StartGUIController startController;
+ 
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
     public Future thread[]=new Future[10]; 
@@ -50,11 +51,17 @@ public class Main extends SimpleApplication
     
     @Override
     public void simpleInitApp()
-    {   
+    {   //inizializzo il diplay
+        niftyDisplay = new NiftyJmeDisplay( assetManager, 
+                                            inputManager, 
+                                            audioRenderer,
+                                            guiViewPort);
+        //inizializzo il controller
+        
         startController = new StartGUIController(stateManager,assetManager,inputManager,audioRenderer, app, guiViewPort, this, rootNode, flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
-        
+
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
@@ -256,17 +263,10 @@ public class Main extends SimpleApplication
 
 //----------------------gui    
     private void initStartGUI(){
-        niftyDisplay = new NiftyJmeDisplay( assetManager, 
-                                            inputManager, 
-                                            audioRenderer,
-                                            guiViewPort);
-        
         Nifty nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/start.xml", "start", startController);
-        
         guiViewPort.addProcessor(niftyDisplay);
         flyCam.setDragToRotate(true);
-        
     }
     
     @Override
