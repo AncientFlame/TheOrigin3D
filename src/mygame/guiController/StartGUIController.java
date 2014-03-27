@@ -85,24 +85,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
    
     public void startGame(int x, int y){
         viewPort.removeProcessor(nifty);
-        
-        
-       this.menu=false;  
-       //inizializzazioni scena
-       appl.thread[0]=appl.executor.submit(appl.InitScene);
-       appl.thread[1]=appl.executor.submit(appl.InitPg);
-       appl.thread[2]=appl.executor.submit(appl.InitKeys);
-       appl.thread[3]=appl.executor.submit(appl.InitVectorMob);
-      
-       //aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
-       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone());
-       
-       rootNode2.attachChild(appl.scena.SceneModel);
-       rootNode2.attachChild(appl.pg.model[appl.pg.arma]);
-       flycam.setDragToRotate(false);
-       appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=null;
-       
-       viewPort.removeProcessor(nifty);      
+             
 
         Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/mapSelection.xml", "start", mapController);
