@@ -86,7 +86,6 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public void startGame(int x, int y){
         viewPort.removeProcessor(nifty);
         
-<<<<<<< HEAD
         
        this.menu=false;  
        //inizializzazioni scena
@@ -104,13 +103,13 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=null;
        
        viewPort.removeProcessor(nifty);      
-=======
+
         Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/mapSelection.xml", "start", mapController);
         niftyOption.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
         mapController.setNifty(nifty);
         viewPort.addProcessor(nifty);
->>>>>>> efb9c2e62239c3ec4514c9255484cb177df5d14f
+
     }
 
     public void bind(Nifty nifty, Screen screen) {
