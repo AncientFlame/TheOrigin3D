@@ -13,7 +13,7 @@ import com.jme3.scene.Spatial;
 public class Player 
 {
   Spatial model[]=new Spatial[1]; //modello 3d pg (braccia)
-  int arma;
+  int arma,munizioni,caricatori;
   CapsuleCollisionShape Shape;
   CharacterControl control;
   float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y

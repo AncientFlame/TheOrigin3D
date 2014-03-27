@@ -39,12 +39,16 @@ public class Main extends SimpleApplication
     private BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
-  
+    
+    private Vector<Bullet> bullets;
+    int n_bull=0;
+    
     //variabili per gestire i mob
     public Vector<Mob>mob;
     private int round; //round attuale
     private int n_mob; //numero mob creati
     private int r_mob; //mob rimasti 
+    
     private Vector3f spawnPoint[]=new Vector3f[4];
     private static Main app;
     
@@ -70,7 +74,6 @@ public class Main extends SimpleApplication
                                             audioRenderer,
                                             guiViewPort);
         //inizializzo il controller
-        
         startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
@@ -78,6 +81,8 @@ public class Main extends SimpleApplication
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
+       
+       bullets=new Vector(1);
        
        r_mob=round=1; n_mob=0;
        flyCam.setEnabled(true);
@@ -101,6 +106,8 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          pg.FirstPersonCamera(cam);
+         if(n_bull>0)
+           System.out.println(bullets.elementAt(0).model.getLocalTranslation());  
        }
     }
     
@@ -227,9 +234,34 @@ public class Main extends SimpleApplication
     {
       public void onAnalog(String key,float value,float tpf)
       {
-          
+         if(key.equals("fire"))
+         {
+             bullets.add(new Bullet(1,"Models/bullet/bullet.j3o",assetManager));
+             bullets.elementAt(n_bull).control.setPhysicsLocation(pg.control.getPhysicsLocation());
+             bullet.getPhysicsSpace().add(bullets.elementAt(n_bull).control);
+             bullets.elementAt(n_bull).dir=pg.model[pg.arma].getLocalRotation().mult(cam.getDirection()); //direzione della camera * rotazione del pg
+             bullets.elementAt(n_bull).control.setWalkDirection(bullets.elementAt(n_bull).dir);
+             rootNode.attachChild(bullets.elementAt(n_bull).model);
+             n_bull++;
+         }
       }
     };
+    
+    private void collisionsBulletsScene()
+    {
+        CollisionResults result=new CollisionResults();
+        for(int i=0; i<bullets.capacity(); i++)
+        {
+           scena.SceneModel.clone().collideWith(bullets.elementAt(i).model.clone().getWorldBound(),result);
+           if(result.size()>0)
+           {
+             rootNode.detachChild(bullets.elementAt(i).model);
+             bullet.getPhysicsSpace().remove(bullets.elementAt(i).control);
+             bullets.remove(i);
+             n_bull--;
+           }    
+        }    
+    }
     
  //-----------------------mob   
     
@@ -237,7 +269,7 @@ public class Main extends SimpleApplication
     {
       public Object call()
       {
-        mob=new Vector(100); //massimo 100 mob
+        mob=new Vector(1); 
         spawnPoint[0]=new Vector3f(-946,11,957);
         spawnPoint[1]=new Vector3f(936,11,927);
         spawnPoint[2]=new Vector3f(947,11,-984);
