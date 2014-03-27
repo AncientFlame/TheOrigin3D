@@ -9,6 +9,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -65,8 +66,7 @@ public class Main extends SimpleApplication
         startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
-        //
-        initSky();
+
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
@@ -107,6 +107,7 @@ public class Main extends SimpleApplication
         public Object call()
         {
            scena=new Scene(assetManager,viewPort,bullet); 
+           initSky();
            return null; 
         }
     };
@@ -149,24 +150,6 @@ public class Main extends SimpleApplication
          thread[0]=null; //il future viene rimesso a null
        }
     }
- //--------------------------listener   
-    public Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
-    {
-       public Object call()
-       {
-           inputManager.addMapping("W",new KeyTrigger(KeyInput.KEY_W));
-           inputManager.addMapping("S",new KeyTrigger(KeyInput.KEY_S));
-           inputManager.addMapping("D",new KeyTrigger(KeyInput.KEY_D));
-           inputManager.addMapping("A",new KeyTrigger(KeyInput.KEY_A));
-           inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso destra
-           inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso sinistra
-           inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
-           inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
-           inputManager.addListener(PgMovement,"left","right","up","down");
-           inputManager.addListener(PgMovement2,"W","S","D","A");
-           return null;
-       }
-    };
     
     private AnalogListener PgMovement=new AnalogListener() //analog listener per il movimento delle braccia
     {
@@ -210,6 +193,36 @@ public class Main extends SimpleApplication
               pg.a=pressed; 
         }
     };
+    
+ //--------------------------listener   
+    public Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
+    {
+       public Object call()
+       {
+           inputManager.addMapping("W",new KeyTrigger(KeyInput.KEY_W));
+           inputManager.addMapping("S",new KeyTrigger(KeyInput.KEY_S));
+           inputManager.addMapping("D",new KeyTrigger(KeyInput.KEY_D));
+           inputManager.addMapping("A",new KeyTrigger(KeyInput.KEY_A));
+           inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso destra
+           inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso sinistra
+           inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
+           inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
+           inputManager.addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+           inputManager.addListener(PgMovement,"left","right","up","down");
+           inputManager.addListener(PgMovement2,"W","S","D","A");
+           inputManager.addListener(gun_action,"fire");
+           return null;
+       }
+    };
+ //--------------------arma
+    private AnalogListener gun_action=new AnalogListener()
+    {
+      public void onAnalog(String key,float value,float tpf)
+      {
+          
+      }
+    };
+    
  //-----------------------mob   
     
     public Callable InitVectorMob=new Callable() //thread per il vettore di mob
@@ -282,6 +295,7 @@ public class Main extends SimpleApplication
       super.destroy();
       executor.shutdown(); //stoppa i thread
     }
+    
     private void initSky(){
         Texture west = assetManager.loadTexture("Textures/DarkStormy/DarkStormyRight2048.png");
         Texture east = assetManager.loadTexture("Textures/DarkStormy/DarkStormyLeft2048.png");
