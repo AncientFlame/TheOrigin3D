@@ -34,6 +34,8 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
 
     StartGUIController(AppStateManager stateManager, 
                         AssetManager man,
+                        InputManager IOMan,
+                        AudioRenderer rederer,
                         SimpleApplication app, 
                         ViewPort port,
                         Main application,
@@ -48,7 +50,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         optionController = new OptionGUIController(stateManager, app, viewPort);
         optionController.setNifty(nifty);
     }    
-    
+ 
     
     public void onStartScreen() {
         

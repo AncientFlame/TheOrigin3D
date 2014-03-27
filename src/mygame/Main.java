@@ -14,10 +14,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Spatial;
 import com.jme3.system.JmeContext;
-import com.jme3.texture.Texture;
-import com.jme3.util.SkyFactory;
 import de.lessvoid.nifty.Nifty;
 import java.util.Random;
 import java.util.Vector;
@@ -62,11 +59,10 @@ public class Main extends SimpleApplication
                                             guiViewPort);
         //inizializzo il controller
         
-        startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam);
+        startController = new StartGUIController(stateManager,assetManager,inputManager,audioRenderer, app, guiViewPort, this, rootNode, flyCam);
         initStartGUI();
         startController.setNifty(niftyDisplay);
-        //
-        initSky();
+
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
@@ -282,15 +278,4 @@ public class Main extends SimpleApplication
       super.destroy();
       executor.shutdown(); //stoppa i thread
     }
-    private void initSky(){
-        Texture west = assetManager.loadTexture("Textures/DarkStormy/DarkStormyRight2048.png");
-        Texture east = assetManager.loadTexture("Textures/DarkStormy/DarkStormyLeft2048.png");
-        Texture north = assetManager.loadTexture("Textures/DarkStormy/DarkStormyFront2048.png");
-        Texture south = assetManager.loadTexture("Textures/DarkStormy/DarkStormyBack2048.png");
-        Texture up = assetManager.loadTexture("Textures/DarkStormy/DarkStormyUp2048.png");
-        Texture down = assetManager.loadTexture("Textures/DarkStormy/DarkStormyDown2048.png");
-
-        Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down, Vector3f.UNIT_XYZ);
-        rootNode.attachChild(sky);
-    } 
 };
