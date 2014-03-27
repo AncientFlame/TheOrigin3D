@@ -12,7 +12,8 @@ import com.jme3.scene.Spatial;
 
 public class Player 
 {
-  Spatial model; //modello 3d pg (braccia)
+  Spatial model[]=new Spatial[1]; //modello 3d pg (braccia)
+  int arma;
   CapsuleCollisionShape Shape;
   CharacterControl control;
   float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
@@ -27,23 +28,23 @@ public class Player
       gradi=gradi2=0;
       w=a=s=d=false;
       healt=100;
+      arma=0;
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
-      model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
-      model.setName("Pg"); //serve per le collisioni
+      model[0]=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
       control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
-      model.setLocalTranslation(10,5+Shape.getHeight()*3f/4,10); //y = 3/4 dell'altezza della capsula
+      model[0].setLocalTranslation(10,5+Shape.getHeight()*3f/4,10); //y = 3/4 dell'altezza della capsula
       control.setGravity(98f); //gravità 
       bullet.getPhysicsSpace().add(control);
    }
    
    void FirstPersonCamera(Camera cam)
    {
-       cam.setRotation(model.getLocalRotation()); 
+       cam.setRotation(model[arma].getLocalRotation()); 
        cam_pos.set(0,-0.3f,-5); 
-       cam.setLocation(model.localToWorld(cam_pos,cam_pos));
+       cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
    }
       
 };

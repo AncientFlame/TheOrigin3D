@@ -91,7 +91,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone()) {}
        
        rootNode2.attachChild(appl.scena.SceneModel);
-       rootNode2.attachChild(appl.pg.model);
+       rootNode2.attachChild(appl.pg.model[appl.pg.arma]);
        flycam.setDragToRotate(false);
        appl.thread[0]=appl.thread[1]=appl.thread[2]=null;
        

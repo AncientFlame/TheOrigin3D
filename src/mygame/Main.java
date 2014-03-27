@@ -141,7 +141,7 @@ public class Main extends SimpleApplication
        {
          pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
          Vector3f app3=pg.control.getPhysicsLocation(); //settata nuova posizione delle braccia
-         pg.model.setLocalTranslation(new Vector3f(app3.x,app3.y+pg.Shape.getHeight()*3f/4,app3.z)); 
+         pg.model[pg.arma].setLocalTranslation(new Vector3f(app3.x,app3.y+pg.Shape.getHeight()*3f/4,app3.z)); 
          thread[0]=null; //il future viene rimesso a null
        }
     }
@@ -185,7 +185,7 @@ public class Main extends SimpleApplication
            quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
            quat2.fromAngleAxis(FastMath.PI*pg.gradi2/180,Vector3f.UNIT_X);  //ruota il quaternione di pg.gradi2 sull'asse x
            pg.rot=quat.mult(quat2); //combina le rotazioni su y e su x in un terzo quaternione 
-           pg.model.setLocalRotation(pg.rot);  
+           pg.model[pg.arma].setLocalRotation(pg.rot);  
         }         
     };
     
@@ -255,7 +255,7 @@ public class Main extends SimpleApplication
          for(int i=0; i<mob.capacity(); i++)
          { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
-            pg.model.clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+            pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
             if(result.size()>0)
               pg.healt-=mob.elementAt(i).attack;
          }
