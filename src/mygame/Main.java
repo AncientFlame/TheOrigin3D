@@ -10,6 +10,8 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.light.DirectionalLight;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -55,8 +57,14 @@ public class Main extends SimpleApplication
     }
     
     @Override
-    public void simpleInitApp()
-    {   //inizializzo il diplay
+    public void simpleInitApp(){
+        /** A white, directional light source */ 
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.5f)).normalizeLocal());
+        sun.setColor(ColorRGBA.White);
+        rootNode.addLight(sun); 
+        
+        //inizializzo il diplay
         niftyDisplay = new NiftyJmeDisplay( assetManager, 
                                             inputManager, 
                                             audioRenderer,
