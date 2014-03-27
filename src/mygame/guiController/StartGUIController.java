@@ -103,7 +103,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        rootNode2.attachChild(appl.scena.SceneModel);
        rootNode2.attachChild(appl.pg.model[appl.pg.arma]);
        flycam.setDragToRotate(false);
-       appl.thread[0]=appl.thread[1]=appl.thread[2]=null;
+       appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=null;
        
        viewPort.removeProcessor(nifty);      
     }
