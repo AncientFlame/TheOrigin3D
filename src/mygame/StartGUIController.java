@@ -12,8 +12,11 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.effects.EffectEventId;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class StartGUIController extends AbstractAppState implements ScreenController{
@@ -78,15 +81,22 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         nifty.cleanup();
         app.stop();
     }
+    
+    @SuppressWarnings("empty-statement")
     public void startGame(int x, int y){
-        this.menu=false;  
-        //inizializzazioni scena
+        
+       Screen screen = nifty.getNifty().getScreen("start");
+       screen.findElementByName("layer").startEffect(EffectEventId.onCustom);
+       
+       this.menu=false;  
+       //inizializzazioni scena
        appl.thread[0]=appl.executor.submit(appl.InitScene);
        appl.thread[1]=appl.executor.submit(appl.InitPg);
        appl.thread[2]=appl.executor.submit(appl.InitKeys);
        appl.thread[3]=appl.executor.submit(appl.InitVectorMob);
-//aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
-       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone()) {}
+      
+       //aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
+       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone());
        
        rootNode2.attachChild(appl.scena.SceneModel);
        rootNode2.attachChild(appl.pg.model[appl.pg.arma]);

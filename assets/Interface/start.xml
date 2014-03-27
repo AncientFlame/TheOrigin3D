@@ -6,14 +6,20 @@
   
   <screen controller="mygame.StartGUIController" id="start">
     <layer childLayout="absolute" id="layer">
+      <effect>
+                    <onCustom name="fade" start="#00" end="#ff" lenght="1000" inherit="true"/> 
+      </effect>   
+        
       <panel childLayout="absolute" height="100%" id="panel1" style="nifty-panel-simple" width="100%" x="0" y="0">
-          
+        
+        
         <image filename="Interface/StartImage/Locandina.jpg" height="389px" id="title" width="431px" x="65%" y="112px"/>
         <image filename="Interface/StartImage/Title.jpg" height="75px" id="locanda" width="489px" x="36%" y="19px"/>
         
         <panel childLayout="absolute" height="50%" id="panel4" style="nifty-panel-simple" width="25%" x="80" y="160px">
             <control childLayout="center" height="8%" id="Start" label="Start" name="button" width="60%" x="10%" y="60">
                  <interact onClick="startGame()"/>
+                 
             </control>
             <control childLayout="center" height="8%" id="Option" label="Option" name="button" width="60%" x="10%" y="130">
                  <interact onClick="option()"/>
