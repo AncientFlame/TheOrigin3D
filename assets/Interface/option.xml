@@ -19,7 +19,7 @@
               <interact onClick="Music()"></interact>
           </control>
           
-          <control id="dropDown2" name="dropDown" width="10%" x="348" y="70"/>
+          <control id="dropDown1" name="dropDown" width="10%" x="348" y="70"/>
           
           <control id="checkbox2" name="3D audio" x="348" y="250" checked = "true">
               <interact onClick="Audio3D()"></interact>
