@@ -80,7 +80,9 @@ public class MapSelectionController extends AbstractAppState implements ScreenCo
         
     }
 
+    @SuppressWarnings("empty-statement")
     public void start(int x, int y){
+       
         this.menu=false;  
        //inizializzazioni scena
        appl.thread[0]=appl.executor.submit(appl.InitScene);
