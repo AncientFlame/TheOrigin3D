@@ -1,22 +1,19 @@
-package mygame;
+package mygame.guiController;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.audio.AudioRenderer;
 import com.jme3.input.FlyByCamera;
-import com.jme3.input.InputManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.effects.EffectEventId;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import mygame.Main;
+import mygame.Settings;
 
 
 public class StartGUIController extends AbstractAppState implements ScreenController{
@@ -29,13 +26,13 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     private OptionGUIController optionController;
     //private Screen screen;
     private SimpleApplication app;
-    boolean menu=true;
-    Main appl;
-    Node rootNode2;
-    FlyByCamera flycam;
+    public boolean menu=true;
+    public Main appl;
+    public Node rootNode2;
+    public FlyByCamera flycam;
     
 
-    StartGUIController(AppStateManager stateManager, 
+    public StartGUIController(AppStateManager stateManager, 
                         AssetManager man,
                         SimpleApplication app, 
                         ViewPort port,
@@ -50,6 +47,8 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         viewPort = port;
         optionController = new OptionGUIController(stateManager, app, viewPort);
         optionController.setNifty(nifty);
+        
+        
     }    
     
     
@@ -84,10 +83,12 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     
     @SuppressWarnings("empty-statement")
     public void startGame(int x, int y){
-        
+        /*
        Screen screen = nifty.getNifty().getScreen("start");
        screen.findElementByName("layer").startEffect(EffectEventId.onCustom);
-       
+       */
+        
+        
        this.menu=false;  
        //inizializzazioni scena
        appl.thread[0]=appl.executor.submit(appl.InitScene);

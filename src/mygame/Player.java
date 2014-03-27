@@ -12,16 +12,16 @@ import com.jme3.scene.Spatial;
 
 public class Player 
 {
-  Spatial model[]=new Spatial[1]; //modello 3d pg (braccia)
-  int arma,munizioni,caricatori;
-  CapsuleCollisionShape Shape;
-  CharacterControl control;
-  float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
-  Vector3f pos; //posizione pg
-  Vector3f cam_pos; //posizione camera
-  Quaternion rot; //rotazione pg
-  boolean w,a,s,d; 
-  int healt;
+  public Spatial model[]=new Spatial[1]; //modello 3d pg (braccia)
+  public int arma,munizioni,caricatori;
+  public CapsuleCollisionShape Shape;
+  public CharacterControl control;
+  public float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
+  public Vector3f pos; //posizione pg
+  public Vector3f cam_pos; //posizione camera
+  public Quaternion rot; //rotazione pg
+  public boolean w,a,s,d; 
+  public int healt;
   
    Player(AssetManager asset,BulletAppState bullet)
    {
