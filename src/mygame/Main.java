@@ -43,7 +43,7 @@ public class Main extends SimpleApplication
     public Player pg;
     
     private Vector<Bullet> bullets;
-    int n_bull=0;
+    int n_bull=0,indice_b1=-1;
     
     //variabili per gestire i mob
     public Vector<Mob>mob;
@@ -84,7 +84,7 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       bullets=new Vector(1);
+       bullets=new Vector(0);
        
        r_mob=round=1; n_mob=0;
        flyCam.setEnabled(true);
@@ -108,8 +108,6 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          pg.FirstPersonCamera(cam);
-         if(n_bull>0)
-           System.out.println(bullets.elementAt(0).model.getLocalTranslation());  
        }
     }
     
@@ -238,31 +236,45 @@ public class Main extends SimpleApplication
       {
          if(key.equals("fire"))
          {
-             bullets.add(new Bullet(1,"Models/bullet/bullet.j3o",assetManager));
-             bullets.elementAt(n_bull).control.setPhysicsLocation(pg.control.getPhysicsLocation());
-             bullet.getPhysicsSpace().add(bullets.elementAt(n_bull).control);
-             bullets.elementAt(n_bull).dir=pg.model[pg.arma].getLocalRotation().mult(cam.getDirection()); //direzione della camera * rotazione del pg
-             bullets.elementAt(n_bull).control.setWalkDirection(bullets.elementAt(n_bull).dir);
-             rootNode.attachChild(bullets.elementAt(n_bull).model);
-             n_bull++;
+             bullets.addElement(new Bullet(10,"Models/bullet/bullet.j3o",assetManager)); //aggiunge elemento a vettore 
+             bullets.elementAt(n_bull).model.setLocalTranslation(pg.model[pg.arma].getLocalTranslation()); //setta posizione
+             rootNode.attachChild(bullets.elementAt(n_bull).model); //attacca
+             n_bull++; //aumenta numero bullets
          }
+      }
+    };
+    
+    private Callable bulletcoll1=new Callable()
+    {
+      public Object call()
+      {
+        CollisionResults result=new CollisionResults();
+        for(int i=0; i<n_bull; i++)
+        {
+           scena.SceneModel.clone().collideWith(bullets.elementAt(i).model.clone().getWorldBound(),result); //verifica collisioni in result
+           if(result.size()>0) //collisioni avvenute
+           {
+             
+           }    
+        }  
+        return true; 
       }
     };
     
     private void collisionsBulletsScene()
     {
-        CollisionResults result=new CollisionResults();
-        for(int i=0; i<bullets.capacity(); i++)
-        {
-           scena.SceneModel.clone().collideWith(bullets.elementAt(i).model.clone().getWorldBound(),result);
-           if(result.size()>0)
-           {
-             rootNode.detachChild(bullets.elementAt(i).model);
-             bullet.getPhysicsSpace().remove(bullets.elementAt(i).control);
-             bullets.remove(i);
-             n_bull--;
-           }    
-        }    
+       if(thread[2]==null)
+         thread[2]=executor.submit(bulletcoll1);
+       else if(thread[2].isDone())
+            {
+              if(indice_b1!=-1)
+              {
+                rootNode.detachChild(bullets.elementAt(indice_b1).model); //leva dal rootnode
+                bullets.remove(indice_b1); //leva dal vettore
+                n_bull--; //diminuisce dimensione 
+              }
+               thread[2]=null; 
+            }
     }
     
  //-----------------------mob   
