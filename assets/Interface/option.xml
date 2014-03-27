@@ -3,7 +3,7 @@
 <useStyles filename="nifty-default-styles.xml"/>
 <useControls filename="nifty-default-controls.xml"/>
   
-  <screen controller="mygame.OptionGUIController" id="start">
+  <screen controller="mygame.guiController.OptionGUIController" id="start">
     <layer childLayout="absolute" id="layer0">
       <panel childLayout="absolute" height="100%" id="panel0" style="nifty-panel" width="100%" x="0" y="0">
         

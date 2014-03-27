@@ -22,7 +22,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     private ViewPort viewPort;
     
 
-    
+    private MapSelectionController mapController;
     private OptionGUIController optionController;
     //private Screen screen;
     private SimpleApplication app;
@@ -47,7 +47,8 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         viewPort = port;
         optionController = new OptionGUIController(stateManager, app, viewPort);
         optionController.setNifty(nifty);
-        
+        mapController = new MapSelectionController(stateManager, app, viewPort);
+        mapController.setNifty(nifty);
         
     }    
     
