@@ -289,7 +289,7 @@ public class Main extends SimpleApplication
         Texture south = assetManager.loadTexture("Textures/DarkStormy/DarkStormyBack2048.png");
         Texture up = assetManager.loadTexture("Textures/DarkStormy/DarkStormyUp2048.png");
         Texture down = assetManager.loadTexture("Textures/DarkStormy/DarkStormyDown2048.png");
-
+       
         Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down, Vector3f.UNIT_XYZ);
         rootNode.attachChild(sky);
     } 
