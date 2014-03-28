@@ -9,7 +9,7 @@ public class BulletRapidFireGun
   Ray bullet_dir;
   float damage;
   int indice=-1; //indice collisioni scena e mob
-  float dist_s=-1; //distanza collisioni scena e mob
+  float dist_s=-1,dist_m=-1; //distanza collisioni scena e mob
     BulletRapidFireGun(float dam,Vector3f pos,Vector3f dir)
     {
        damage=dam; 

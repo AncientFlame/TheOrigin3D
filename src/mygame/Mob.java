@@ -20,7 +20,6 @@ public class Mob
     Random rand=new Random();
     attack=rand.nextInt(9)+1; //compreso tra 1 e 10
     model=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
-    model.setName("Mob"); //serve per le collisioni
     Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
     control=new CharacterControl(Shape,0.5f); //crea character control
     control.setPhysicsLocation(spawnPoint); //posizione character control

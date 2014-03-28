@@ -10,7 +10,7 @@ public class GuiGame
   {
     pointer=new Picture("pointerimagine");
     pointer.setImage(asset,"Textures/asphalt.jpg", true);
-    pointer.setPosition(640,350); //1280/2 700/2
+    pointer.setPosition(Settings.system.getWidth()/2,Settings.system.getHeight()/2); 
     pointer.setWidth(5);
     pointer.setHeight(5);
   }

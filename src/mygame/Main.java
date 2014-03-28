@@ -35,7 +35,7 @@ public class Main extends SimpleApplication
  
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
-    public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[2]
+    public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[3]
     private BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
@@ -97,8 +97,8 @@ public class Main extends SimpleApplication
            mobFollowPg();  
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
+         updateround();
          pg.FirstPersonCamera(cam);
-         System.out.println(pg.munizioni[pg.arma]+" "+pg.caricatori[pg.arma]);
        }
     }
     
@@ -236,7 +236,25 @@ public class Main extends SimpleApplication
                 bullet1=new BulletRapidFireGun(10f,pg.model[pg.arma].getLocalTranslation(),cam.getDirection());
   
              thread[2]=executor.submit(bullScene);
-             while(!thread[2].isDone());
+             thread[3]=executor.submit(bullMob);
+             while(!thread[2].isDone() || !thread[3].isDone());
+             //System.out.println(bullet1.dist_m+" "+bullet1.dist_s);
+             switch(pg.arma)
+             {
+                 case 0: {     //se la collisione più vicina è quella con il mob o se è entrato in collisione solo con il mob
+                            if( (bullet1.dist_m<bullet1.dist_s && bullet1.dist_m!=-1) || (bullet1.dist_m!=-1 && bullet1.dist_s==-1) ) 
+                            {
+                                mob.elementAt(bullet1.indice).healt-=bullet1.damage; //decremento vita mob
+                                if(mob.elementAt(bullet1.indice).healt<=0) //mob morto
+                                {
+                                   rootNode.detachChild(mob.elementAt(bullet1.indice).model); //leva il mob dal vettore e dal rootNode
+                                   mob.removeElementAt(bullet1.indice);
+                                   r_mob--; //mob rimasti
+                                }
+                            } 
+                         } break; 
+             }
+             
              pg.munizioni[pg.arma]--;
            } else
                ric();
@@ -269,21 +287,50 @@ public class Main extends SimpleApplication
       }
     }
     
+    private Callable bullMob=new Callable() //collisioni proiettili mob thread[3]
+    {
+      public Object call()
+      {
+        CollisionResults result=new CollisionResults();
+        for(int i=0; i<mob.capacity(); i++)
+        {
+           if(pg.arma==0) 
+             bullet1.bullet_dir.clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+           
+           if(result.size()>0) //trova collisione più vicina
+           { 
+             for(int j=0; j<result.size(); j++)
+                switch(pg.arma)
+                {
+                    case 0: {
+                              if(result.getCollision(j).getDistance()<bullet1.dist_m || bullet1.dist_m==-1)
+                              {
+                                 bullet1.dist_m=result.getCollision(j).getDistance();
+                                 bullet1.indice=i;
+                              }  
+                            } break;
+                }
+           }
+        }
+        return null;  
+      }
+    };
+    
     private Callable bullScene=new Callable() //collisioni proiettili scena thread[2]
     {
          public Object call()
          {
               CollisionResults result=new CollisionResults(); 
               if(pg.arma==0) 
-               scena.SceneModel.clone().collideWith(bullet1.bullet_dir,result); //calcola collisioni
+               scena.SceneModel.clone().collideWith(bullet1.bullet_dir.clone(),result); //calcola collisioni
               if(result.size()>0) //ci sono collisioni
                 for(int i=0; i<result.size(); i++) //trova la collisione più vicina
                   switch(pg.arma)
                   {
-                     case 0:  
-                             if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 )
-                               bullet1.dist_s=result.getCollision(i).getDistance(); 
-                           break;
+                     case 0: {  
+                               if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 )
+                                 bullet1.dist_s=result.getCollision(i).getDistance(); 
+                             } break;
                  }
                return null; 
          }
@@ -363,7 +410,16 @@ public class Main extends SimpleApplication
           return null;
       }  
     };
-
+//----------gameplay
+    private void updateround()
+    {
+       if(r_mob==0)
+       {
+          round++;
+          n_mob=0;
+          r_mob=round;
+       }
+    }
     @Override
     public void destroy()
     {
