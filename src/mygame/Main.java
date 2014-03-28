@@ -4,6 +4,7 @@ package mygame;
 import mygame.guiController.StartGUIController;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -13,13 +14,16 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.system.JmeContext;
 import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
@@ -37,23 +41,24 @@ public class Main extends SimpleApplication
  
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
-    public Future thread[]=new Future[10]; 
+    public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[2]
     private BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
+    public GuiGame GUIg;
     
-    private Vector<Bullet> bullets;
-    int n_bull=0,indice_b1=-1;
-    
+ //variabili proiettile   
+    BulletRapidFireGun bullet1;
+  
     //variabili per gestire i mob
     public Vector<Mob>mob;
     private int round; //round attuale
     private int n_mob; //numero mob creati
     private int r_mob; //mob rimasti 
-    
+    Vector3f app2;
     private Vector3f spawnPoint[]=new Vector3f[4];
     private static Main app;
-    
+
     public static void main(String[] args) 
     {
         app = new Main();
@@ -64,11 +69,11 @@ public class Main extends SimpleApplication
     
     @Override
     public void simpleInitApp(){
-        /** A white, directional light source */ 
+      /*   //A white, directional light source 
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.5f)).normalizeLocal());
         sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun); 
+        rootNode.addLight(sun); */
         
         //inizializzo il diplay
         niftyDisplay = new NiftyJmeDisplay( assetManager, 
@@ -76,15 +81,13 @@ public class Main extends SimpleApplication
                                             audioRenderer,
                                             guiViewPort);
         //inizializzo il controller
-        startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam);
+        startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam,guiNode);
         initStartGUI();
         startController.setNifty(niftyDisplay);
 
        //inizializza la fisica del gioco 
        bullet=new BulletAppState();
        stateManager.attach(bullet);
-       
-       bullets=new Vector(0);
        
        r_mob=round=1; n_mob=0;
        flyCam.setEnabled(true);
@@ -107,6 +110,7 @@ public class Main extends SimpleApplication
            mobFollowPg();  
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
+       
          pg.FirstPersonCamera(cam);
        }
     }
@@ -232,50 +236,52 @@ public class Main extends SimpleApplication
  //--------------------arma
     private AnalogListener gun_action=new AnalogListener()
     {
+      @SuppressWarnings("empty-statement")
       public void onAnalog(String key,float value,float tpf)
       {
          if(key.equals("fire"))
          {
-             bullets.addElement(new Bullet(10,"Models/bullet/bullet.j3o",assetManager)); //aggiunge elemento a vettore 
-             bullets.elementAt(n_bull).model.setLocalTranslation(pg.model[pg.arma].getLocalTranslation()); //setta posizione
-             rootNode.attachChild(bullets.elementAt(n_bull).model); //attacca
-             n_bull++; //aumenta numero bullets
+           if(pg.arma==0) //mitragliatrice->usa semiretta 
+           {  
+              bullet1=new BulletRapidFireGun(10f,pg.model[pg.arma].getLocalTranslation(),cam.getDirection());
+              thread[2]=executor.submit(bullScene);
+              while(!thread[2].isDone());
+              System.out.println(bullet1.dist_s);
+              
+    Sphere sphere = new Sphere(30, 30, 3f);
+    Geometry mark;
+    mark = new Geometry("BOOM!", sphere);
+    Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    mark_mat.setColor("Color", ColorRGBA.Red);
+    mark.setMaterial(mark_mat);
+    mark.setLocalTranslation(app2);
+    rootNode.attachChild(mark);
+           }
          }
       }
     };
     
-    private Callable bulletcoll1=new Callable()
+    private Callable bullScene=new Callable() //collisioni proiettili scena thread[2]
     {
-      public Object call()
-      {
-        CollisionResults result=new CollisionResults();
-        for(int i=0; i<n_bull; i++)
-        {
-           scena.SceneModel.clone().collideWith(bullets.elementAt(i).model.clone().getWorldBound(),result); //verifica collisioni in result
-           if(result.size()>0) //collisioni avvenute
-           {
-             
-           }    
-        }  
-        return true; 
-      }
+         public Object call()
+         {
+              CollisionResults result=new CollisionResults(); 
+              if(pg.arma==0) 
+               scena.SceneModel.clone().collideWith(bullet1.bullet_dir,result); //calcola collisioni
+              if(result.size()>0) //ci sono collisioni
+                for(int i=0; i<result.size(); i++) //trova la collisione più vicina
+                  switch(pg.arma)
+                  {
+                     case 0:  
+                   if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 ) { 
+                      CollisionResult c=result.getClosestCollision();
+                      app2=c.getContactPoint();
+                      bullet1.dist_s=result.getCollision(i).getDistance(); }
+                           break;
+                 }
+               return null; 
+         }
     };
-    
-    private void collisionsBulletsScene()
-    {
-       if(thread[2]==null)
-         thread[2]=executor.submit(bulletcoll1);
-       else if(thread[2].isDone())
-            {
-              if(indice_b1!=-1)
-              {
-                rootNode.detachChild(bullets.elementAt(indice_b1).model); //leva dal rootnode
-                bullets.remove(indice_b1); //leva dal vettore
-                n_bull--; //diminuisce dimensione 
-              }
-               thread[2]=null; 
-            }
-    }
     
  //-----------------------mob   
     
@@ -283,7 +289,7 @@ public class Main extends SimpleApplication
     {
       public Object call()
       {
-        mob=new Vector(1); 
+        mob=new Vector(0); 
         spawnPoint[0]=new Vector3f(-946,11,957);
         spawnPoint[1]=new Vector3f(936,11,927);
         spawnPoint[2]=new Vector3f(947,11,-984);
@@ -343,6 +349,15 @@ public class Main extends SimpleApplication
         flyCam.setDragToRotate(true);
     }
     
+    public Callable initGameGUI=new Callable()
+    {
+      public Object call()  
+      {
+          GUIg=new GuiGame(assetManager);
+          return null;
+      }  
+    };
+
     @Override
     public void destroy()
     {

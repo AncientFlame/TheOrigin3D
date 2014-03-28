@@ -29,6 +29,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public boolean menu=true;
     public Main appl;
     public Node rootNode2;
+    public Node guiNode2;
     public FlyByCamera flycam;
     
 
@@ -38,13 +39,15 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
                         ViewPort port,
                         Main application,
                         Node rootN,
-                        FlyByCamera fly) {
+                        FlyByCamera fly,
+                        Node guiN) {
         rootNode2=rootN;
         flycam=fly;
         appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
         viewPort = port;
+        guiNode2=guiN;
         optionController = new OptionGUIController(stateManager, app, viewPort);
         optionController.setNifty(nifty);
         mapController = new MapSelectionController(stateManager, man ,app, viewPort, application, rootN, fly);
@@ -83,6 +86,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     }
     
    
+    @SuppressWarnings("empty-statement")
     public void startGame(int x, int y){
         viewPort.removeProcessor(nifty);
         this.menu=false;  
@@ -91,14 +95,16 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        appl.thread[1]=appl.executor.submit(appl.InitPg);
        appl.thread[2]=appl.executor.submit(appl.InitKeys);
        appl.thread[3]=appl.executor.submit(appl.InitVectorMob);
-      
+       appl.thread[4]=appl.executor.submit(appl.initGameGUI);
        //aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
-       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone());
+       while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone() || !appl.thread[4].isDone());
        
        rootNode2.attachChild(appl.scena.SceneModel);
        rootNode2.attachChild(appl.pg.model[appl.pg.arma]);
+       guiNode2.attachChild(appl.GUIg.pointer);
+       
        flycam.setDragToRotate(false);
-       appl.thread[0]=appl.thread[1]=appl.thread[2]=null;
+       appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=appl.thread[4]=null;
        viewPort.removeProcessor(nifty);      
        /**
         * fa partire la gui di selezione mappe 
