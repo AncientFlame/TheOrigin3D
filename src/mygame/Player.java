@@ -13,7 +13,7 @@ import com.jme3.scene.Spatial;
 public class Player 
 {
   public Spatial model[]=new Spatial[1]; //modello 3d pg (braccia)
-  public int arma,munizioni,caricatori;
+  public int arma,munizioni[],caricatori[],munizioni_max[],caricatori_max[];
   public CapsuleCollisionShape Shape;
   public CharacterControl control;
   public float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
@@ -28,6 +28,11 @@ public class Player
       gradi=gradi2=0;
       w=a=s=d=false;
       healt=100;
+      munizioni=new int[1];
+      caricatori=new int[1];
+      munizioni_max=new int[1];
+      caricatori_max=new int[1];
+      munizioni[0]=25; caricatori[0]=100; munizioni_max[0]=25; caricatori_max[0]=100; //arma 0
       arma=0;
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);

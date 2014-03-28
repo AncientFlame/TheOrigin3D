@@ -4,7 +4,6 @@ package mygame;
 import mygame.guiController.StartGUIController;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -13,17 +12,12 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.light.DirectionalLight;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Sphere;
 import com.jme3.system.JmeContext;
 import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
@@ -55,7 +49,6 @@ public class Main extends SimpleApplication
     private int round; //round attuale
     private int n_mob; //numero mob creati
     private int r_mob; //mob rimasti 
-    Vector3f app2;
     private Vector3f spawnPoint[]=new Vector3f[4];
     private static Main app;
 
@@ -68,13 +61,7 @@ public class Main extends SimpleApplication
     }
     
     @Override
-    public void simpleInitApp(){
-      /*   //A white, directional light source 
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.5f)).normalizeLocal());
-        sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun); */
-        
+    public void simpleInitApp(){        
         //inizializzo il diplay
         niftyDisplay = new NiftyJmeDisplay( assetManager, 
                                             inputManager, 
@@ -110,8 +97,8 @@ public class Main extends SimpleApplication
            mobFollowPg();  
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
-       
          pg.FirstPersonCamera(cam);
+         System.out.println(pg.munizioni[pg.arma]+" "+pg.caricatori[pg.arma]);
        }
     }
     
@@ -227,39 +214,60 @@ public class Main extends SimpleApplication
            inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
            inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
            inputManager.addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+           inputManager.addMapping("ricarica",new KeyTrigger(KeyInput.KEY_R));
            inputManager.addListener(PgMovement,"left","right","up","down");
            inputManager.addListener(PgMovement2,"W","S","D","A");
            inputManager.addListener(gun_action,"fire");
+           inputManager.addListener(gun_action2,"ricarica");
            return null;
        }
     };
  //--------------------arma
-    private AnalogListener gun_action=new AnalogListener()
+    private AnalogListener gun_action=new AnalogListener() 
     {
       @SuppressWarnings("empty-statement")
       public void onAnalog(String key,float value,float tpf)
       {
-         if(key.equals("fire"))
+         if(key.equals("fire")) //input sparo
          {
-           if(pg.arma==0) //mitragliatrice->usa semiretta 
-           {  
-              bullet1=new BulletRapidFireGun(10f,pg.model[pg.arma].getLocalTranslation(),cam.getDirection());
-              thread[2]=executor.submit(bullScene);
-              while(!thread[2].isDone());
-              System.out.println(bullet1.dist_s);
-              
-    Sphere sphere = new Sphere(30, 30, 3f);
-    Geometry mark;
-    mark = new Geometry("BOOM!", sphere);
-    Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mark_mat.setColor("Color", ColorRGBA.Red);
-    mark.setMaterial(mark_mat);
-    mark.setLocalTranslation(app2);
-    rootNode.attachChild(mark);
-           }
+           if(pg.munizioni[pg.arma]>0)
+           {
+             if(pg.arma==0) //mitragliatrice->usa semiretta 
+                bullet1=new BulletRapidFireGun(10f,pg.model[pg.arma].getLocalTranslation(),cam.getDirection());
+  
+             thread[2]=executor.submit(bullScene);
+             while(!thread[2].isDone());
+             pg.munizioni[pg.arma]--;
+           } else
+               ric();
          }
       }
     };
+    
+    private ActionListener gun_action2=new ActionListener()
+    {
+       public void onAction(String key,boolean pressed,float tpf)
+       {
+          if(key.equals("ricarica") && !pressed)
+            ric();
+       }
+    };
+    
+    private void ric() //funzione per ricaricare
+    {
+      if(pg.munizioni[pg.arma]<pg.munizioni_max[pg.arma]) //se non si hanno il massimo dei proiettili
+      {
+        int app=pg.munizioni_max[pg.arma]-pg.munizioni[pg.arma]; //trova quanti proiettili mancano
+        if(pg.caricatori[pg.arma]-app>=0) //se nel caricatore ce ne sono abbastanza 
+        {
+           pg.caricatori[pg.arma]-=app; //prende proiettili dal caricatore
+           pg.munizioni[pg.arma]+=app; //li mette nelle munizioni disponibili per sparare
+        } else {  //i proiettili rimasti non bastano a ricaricare tutta l'arma... si usano tutti i proiettili rimasti
+                 pg.munizioni[pg.arma]+=pg.caricatori[pg.arma];
+                 pg.caricatori[pg.arma]=0;
+               }
+      }
+    }
     
     private Callable bullScene=new Callable() //collisioni proiettili scena thread[2]
     {
@@ -273,10 +281,8 @@ public class Main extends SimpleApplication
                   switch(pg.arma)
                   {
                      case 0:  
-                   if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 ) { 
-                      CollisionResult c=result.getClosestCollision();
-                      app2=c.getContactPoint();
-                      bullet1.dist_s=result.getCollision(i).getDistance(); }
+                             if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 )
+                               bullet1.dist_s=result.getCollision(i).getDistance(); 
                            break;
                  }
                return null; 

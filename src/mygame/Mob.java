@@ -13,7 +13,7 @@ public class Mob
   Spatial model;
   CharacterControl control;
   CapsuleCollisionShape Shape;
-  int attack;
+  int attack,healt=50;
   
   Mob(AssetManager asset,BulletAppState bullet,Vector3f spawnPoint)
   {
