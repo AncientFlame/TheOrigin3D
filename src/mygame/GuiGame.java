@@ -9,7 +9,7 @@ public class GuiGame
   GuiGame(AssetManager asset)
   {
     pointer=new Picture("pointerimagine");
-    pointer.setImage(asset,"Interface/pointer.jpg", true);
+    pointer.setImage(asset,"Interface/pointer.png", true);
     pointer.setPosition(Settings.system.getWidth()/2,Settings.system.getHeight()/2); 
     pointer.setWidth(10);
     pointer.setHeight(10);
