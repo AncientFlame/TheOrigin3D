@@ -151,7 +151,8 @@ public class Main extends SimpleApplication
        if(thread[0].isDone()) //se il thread è finito
        {
          pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
-         pg.model[pg.arma].setLocalTranslation(pg.control.getPhysicsLocation());
+         Vector3f app=pg.control.getPhysicsLocation();
+         pg.model[pg.arma].setLocalTranslation(app.x,app.y+pg.Shape.getHeight()*3f/4,app.z);
          thread[0]=null; //il future viene rimesso a null
        }
     }
@@ -167,10 +168,10 @@ public class Main extends SimpleApplication
               if(pg.gradi-1.5>=0) pg.gradi-=1.5; else pg.gradi=360; 
 
            if(name.equals("up")) //rotazione braccia verso l'alto
-              if(pg.gradi2-0.55>=-25) pg.gradi2-=0.55;
+              if(pg.gradi2-0.85>=-35) pg.gradi2-=0.85;
 
            if(name.equals("down")) //rotazione braccia verso il basso
-              if(pg.gradi2+0.55<=40) pg.gradi2+=0.55;
+              if(pg.gradi2+0.85<=40) pg.gradi2+=0.85;
 
            Quaternion quat=new Quaternion();
            Quaternion quat2=new Quaternion();
