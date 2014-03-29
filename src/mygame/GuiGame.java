@@ -9,9 +9,9 @@ public class GuiGame
   GuiGame(AssetManager asset)
   {
     pointer=new Picture("pointerimagine");
-    pointer.setImage(asset,"Textures/asphalt.jpg", true);
+    pointer.setImage(asset,"Interface/pointer.jpg", true);
     pointer.setPosition(Settings.system.getWidth()/2,Settings.system.getHeight()/2); 
-    pointer.setWidth(5);
-    pointer.setHeight(5);
+    pointer.setWidth(10);
+    pointer.setHeight(10);
   }
 };
