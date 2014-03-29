@@ -151,8 +151,7 @@ public class Main extends SimpleApplication
        if(thread[0].isDone()) //se il thread è finito
        {
          pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
-         Vector3f app3=pg.control.getPhysicsLocation(); //settata nuova posizione delle braccia
-         pg.model[pg.arma].setLocalTranslation(new Vector3f(app3.x,app3.y+pg.Shape.getHeight()*3f/4,app3.z)); 
+         pg.model[pg.arma].setLocalTranslation(pg.control.getPhysicsLocation());
          thread[0]=null; //il future viene rimesso a null
        }
     }

@@ -36,11 +36,11 @@ public class Player
       arma=0;
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
-      model[0]=asset.loadModel("Models/birillomigliorato/birillo.migliorato.j3o");
+      model[0]=asset.loadModel("Models/braccio2/braccio2.j3o");
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
       control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
-      model[0].setLocalTranslation(10,5+Shape.getHeight()*3f/4,10); //y = 3/4 dell'altezza della capsula
+      model[0].setLocalTranslation(10,5,10); 
       control.setGravity(98f); //gravità 
       bullet.getPhysicsSpace().add(control);
    }
