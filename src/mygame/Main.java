@@ -77,7 +77,7 @@ public class Main extends SimpleApplication
        stateManager.attach(bullet);
        
        r_mob=round=1; n_mob=0;
-       flyCam.setEnabled(true);
+       flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        cam.setFrustumFar(3000); //distanza di visibilità della camera
     }
