@@ -35,7 +35,7 @@ public class Main extends SimpleApplication
  
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
-    public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[3]
+    public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[4]
     private BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
@@ -359,9 +359,23 @@ public class Main extends SimpleApplication
        n_mob++;
     }
     
+    private Callable FollowPg=new Callable()
+    {
+      public Object call()
+      {
+         return 1; 
+      }
+    };
+    
     private void mobFollowPg() 
     {
-      
+      if(thread[4]==null)
+        thread[4]=executor.submit(FollowPg);
+      else if(thread[4].isDone())
+           {
+              //....operazioni dopo la fine del thread
+              thread[4]=null; //rimesso a null per ripartire
+           }  
     }
     
     private void collisionMobPg() //usa thread[1]
