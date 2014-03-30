@@ -162,10 +162,10 @@ public class Main extends SimpleApplication
         public void onAnalog(String name, float value, float tpf) 
         { 
            if(name.equals("right")) //rotazione braccia verso destra
-              if(pg.gradi+2.5<=360) pg.gradi+=2.5f; else pg.gradi=0; //1.5 gradi -> 45°/30 
+              if(pg.gradi+2.0<=360) pg.gradi+=2.0f; else pg.gradi=0; 
 
            if(name.equals("left")) //rotazione braccia verso sinistra
-              if(pg.gradi-1.5>=0) pg.gradi-=1.5; else pg.gradi=360; 
+              if(pg.gradi-1.2>=0) pg.gradi-=1.2; else pg.gradi=360; 
 
            if(name.equals("up")) //rotazione braccia verso l'alto
               if(pg.gradi2-0.85>=-35) pg.gradi2-=0.85;
@@ -366,7 +366,7 @@ public class Main extends SimpleApplication
          return 1; 
       }
     };
-    
+
     private void mobFollowPg() 
     {
       if(thread[4]==null)
@@ -440,7 +440,7 @@ public class Main extends SimpleApplication
       super.destroy();
       executor.shutdown(); //stoppa i thread
     }
-    
+                               
     private void initSky(){
         Texture west = assetManager.loadTexture("Textures/DarkStormy/DarkStormyRight2048.png");
         Texture east = assetManager.loadTexture("Textures/DarkStormy/DarkStormyLeft2048.png");
@@ -448,7 +448,7 @@ public class Main extends SimpleApplication
         Texture south = assetManager.loadTexture("Textures/DarkStormy/DarkStormyBack2048.png");
         Texture up = assetManager.loadTexture("Textures/DarkStormy/DarkStormyUp2048.png");
         Texture down = assetManager.loadTexture("Textures/DarkStormy/DarkStormyDown2048.png");
-       
+                                                    
         Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down, Vector3f.UNIT_XYZ);
         rootNode.attachChild(sky);
     } 
