@@ -164,26 +164,26 @@ Vector2f coord,appoggio;
     {
         public void onAnalog(String name, float value, float tpf) 
         { 
-           if(name.equals("left")) //rotazione braccia verso destra
+           if(name.equals("left")) //rotazione braccia verso sinistra
            {
-             Vector2f coord2=inputManager.getCursorPosition();
-             if(pg.gradi+(appoggio.x-coord2.x)/4<=360) pg.gradi+=(appoggio.x-coord2.x)/4; else pg.gradi=0; 
-            // if(pg.gradi+1.5<=360) pg.gradi+=1.5f; else pg.gradi=0; 
+             if(pg.gradi+(coord.x-appoggio.x)/4<=360) pg.gradi+=(appoggio.x-coord.x)/4; else pg.gradi=0; 
              appoggio.x=coord.x;
            }
-           if(name.equals("right")) //rotazione braccia verso sinistra
+           if(name.equals("right")) //rotazione braccia verso destra
            {
-             Vector2f coord2=inputManager.getCursorPosition();
-             if(pg.gradi-(coord2.x-appoggio.x)/4>=0) pg.gradi-=(coord2.x-appoggio.x)/4; else pg.gradi=360; 
-            //   if(pg.gradi-1.5>=0) pg.gradi-=1.5; else pg.gradi=360;
-             appoggio.x=coord2.x;
+             if(pg.gradi-(coord.x-appoggio.x)/4>=0) pg.gradi-=(coord.x-appoggio.x)/4; else pg.gradi=360; 
+             appoggio.x=coord.x;
            }
            if(name.equals("up")) //rotazione braccia verso l'alto
-             if(pg.gradi2-0.65>=-35) pg.gradi2-=0.65; 
-  
+           { 
+              if(pg.gradi2-(coord.y-appoggio.y)/4>=-35) pg.gradi2-=(coord.y-appoggio.y)/4;  
+              appoggio.y=coord.y;
+           }
            if(name.equals("down")) //rotazione braccia verso il basso
-             if(pg.gradi2+0.65<=40) pg.gradi2+=0.65;
-       
+           {
+             if(pg.gradi2-(coord.y-appoggio.y)/4<=40) pg.gradi2-=(coord.y-appoggio.y)/4;  
+             appoggio.y=coord.y;
+           }
            Quaternion quat=new Quaternion();
            Quaternion quat2=new Quaternion();
            quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
