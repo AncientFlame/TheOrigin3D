@@ -14,6 +14,7 @@ import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
@@ -51,7 +52,7 @@ public class Main extends SimpleApplication
     private int r_mob; //mob rimasti 
     private Vector3f spawnPoint[]=new Vector3f[4];
     private static Main app;
-
+Vector2f coord,appoggio;
     public static void main(String[] args) 
     {
         app = new Main();
@@ -77,17 +78,20 @@ public class Main extends SimpleApplication
        stateManager.attach(bullet);
        
        r_mob=round=1; n_mob=0;
-       flyCam.setEnabled(false);
+       flyCam.setEnabled(true);
        flyCam.setMoveSpeed(0.0f);
+       flyCam.setZoomSpeed(0.0f);
        cam.setFrustumFar(3000); //distanza di visibilità della camera
-       
+       coord=inputManager.getCursorPosition();  
+       appoggio=new Vector2f();
+       appoggio.x=coord.x; appoggio.y=coord.y;
     }
 
     @Override
     public void simpleUpdate(float tpf)
     { 
        if(startController.menu==false)
-       { 
+       {   
          pgMov();
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
@@ -99,7 +103,6 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();
-        System.out.println(inputManager.getCursorPosition());
          pg.FirstPersonCamera(cam);
        }
     }
@@ -161,19 +164,26 @@ public class Main extends SimpleApplication
     {
         public void onAnalog(String name, float value, float tpf) 
         { 
-           if(name.equals("right")) //rotazione braccia verso destra
-              if(pg.gradi+2.2<=360) pg.gradi+=2.2f; else pg.gradi=0; 
- 
-           if(name.equals("left")) //rotazione braccia verso sinistra
-              if(pg.gradi-1.2>=0) pg.gradi-=1.2; else pg.gradi=360; 
-                   
+           if(name.equals("left")) //rotazione braccia verso destra
+           {
+             Vector2f coord2=inputManager.getCursorPosition();
+             if(pg.gradi+(appoggio.x-coord2.x)/4<=360) pg.gradi+=(appoggio.x-coord2.x)/4; else pg.gradi=0; 
+            // if(pg.gradi+1.5<=360) pg.gradi+=1.5f; else pg.gradi=0; 
+             appoggio.x=coord.x;
+           }
+           if(name.equals("right")) //rotazione braccia verso sinistra
+           {
+             Vector2f coord2=inputManager.getCursorPosition();
+             if(pg.gradi-(coord2.x-appoggio.x)/4>=0) pg.gradi-=(coord2.x-appoggio.x)/4; else pg.gradi=360; 
+            //   if(pg.gradi-1.5>=0) pg.gradi-=1.5; else pg.gradi=360;
+             appoggio.x=coord2.x;
+           }
            if(name.equals("up")) //rotazione braccia verso l'alto
-              if(pg.gradi2-0.85>=-35) pg.gradi2-=0.85;
-                
+             if(pg.gradi2-0.65>=-35) pg.gradi2-=0.65; 
+  
            if(name.equals("down")) //rotazione braccia verso il basso
-              if(pg.gradi2+0.85<=40) pg.gradi2+=0.85;
+             if(pg.gradi2+0.65<=40) pg.gradi2+=0.65;
        
-               
            Quaternion quat=new Quaternion();
            Quaternion quat2=new Quaternion();
            quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
@@ -210,8 +220,8 @@ public class Main extends SimpleApplication
            inputManager.addMapping("S",new KeyTrigger(KeyInput.KEY_S));
            inputManager.addMapping("D",new KeyTrigger(KeyInput.KEY_D));
            inputManager.addMapping("A",new KeyTrigger(KeyInput.KEY_A));
-           inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso destra
-           inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso sinistra
+           inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso destra
+           inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso sinistra
            inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
            inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
            inputManager.addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
