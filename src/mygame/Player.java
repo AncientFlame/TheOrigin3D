@@ -36,7 +36,7 @@ public class Player
       arma=0;
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
-      model[0]=asset.loadModel("Models/braccio2/braccio2.j3o");
+      model[0]=asset.loadModel("Models/braccio/braccio2.j3o");
       Shape=new CapsuleCollisionShape(1.5f, 6f); //primo parametro raggio,secondo altezza della capsula
       control=new CharacterControl(Shape,0.5f); //crea character control
       control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
@@ -47,8 +47,10 @@ public class Player
    
    void FirstPersonCamera(Camera cam)
    {
-       cam.setRotation(model[arma].getLocalRotation()); 
-       cam_pos.set(0,-0.3f,-5); 
+       Vector3f app=control.getPhysicsLocation(); //posizioni le braccia ai 3/4 dell'altezza della capsula
+       model[arma].setLocalTranslation(app.x,app.y+Shape.getHeight()*3f/4,app.z);
+       cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
+       cam_pos.set(0,-0.3f,-5); //la posizione della camera è spostata indietro di 5 e in basso 0.3 rispetto alle coordinate globali del modello
        cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
    }
       

@@ -25,7 +25,7 @@ public class Scene
       
        SceneModel=assetManager.loadModel("Models/mappa1.j3o"); //carica modello 
        SceneModel.setMaterial(mat); //da levare quando ci saranno le texture
-    
+
        SceneShape=CollisionShapeFactory.createMeshShape(SceneModel); //crea collision shape prendendo forma del modello della scena
        body=new RigidBodyControl(SceneShape,0); //crea rigid body con massa 0(non è sottoposto a gravità) prendendo forma da SceneShape
        SceneModel.addControl(body); //aggiunge il rigidbody alla scena

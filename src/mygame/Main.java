@@ -80,6 +80,7 @@ public class Main extends SimpleApplication
        flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        cam.setFrustumFar(3000); //distanza di visibilità della camera
+       
     }
 
     @Override
@@ -87,7 +88,7 @@ public class Main extends SimpleApplication
     { 
        if(startController.menu==false)
        { 
-         pgMov(); //movimento character control thread[0]
+         pgMov();
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
            mobCreate(); //crea un mob
@@ -98,6 +99,7 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();
+        System.out.println(inputManager.getCursorPosition());
          pg.FirstPersonCamera(cam);
        }
     }
@@ -105,7 +107,7 @@ public class Main extends SimpleApplication
     
     @Override
     public void simpleRender(RenderManager rm) 
-    {  
+    { 
     }
 //---------------------scena      
     public Callable InitScene=new Callable() //thread per la scena   
@@ -151,8 +153,6 @@ public class Main extends SimpleApplication
        if(thread[0].isDone()) //se il thread è finito
        {
          pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
-         Vector3f app=pg.control.getPhysicsLocation();
-         pg.model[pg.arma].setLocalTranslation(app.x,app.y+pg.Shape.getHeight()*3f/4,app.z);
          thread[0]=null; //il future viene rimesso a null
        }
     }
@@ -162,17 +162,18 @@ public class Main extends SimpleApplication
         public void onAnalog(String name, float value, float tpf) 
         { 
            if(name.equals("right")) //rotazione braccia verso destra
-              if(pg.gradi+2.0<=360) pg.gradi+=2.0f; else pg.gradi=0; 
-
+              if(pg.gradi+2.2<=360) pg.gradi+=2.2f; else pg.gradi=0; 
+ 
            if(name.equals("left")) //rotazione braccia verso sinistra
               if(pg.gradi-1.2>=0) pg.gradi-=1.2; else pg.gradi=360; 
-
+                   
            if(name.equals("up")) //rotazione braccia verso l'alto
               if(pg.gradi2-0.85>=-35) pg.gradi2-=0.85;
-
+                
            if(name.equals("down")) //rotazione braccia verso il basso
               if(pg.gradi2+0.85<=40) pg.gradi2+=0.85;
-
+       
+               
            Quaternion quat=new Quaternion();
            Quaternion quat2=new Quaternion();
            quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
