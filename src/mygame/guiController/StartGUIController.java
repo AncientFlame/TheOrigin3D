@@ -45,12 +45,13 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public Node rootNode2;
     public Node guiNode2;
     public FlyByCamera flycam;
-    
+    public Hud hud;
 
     public StartGUIController(AppStateManager stateManager, 
                         AssetManager man,
                         SimpleApplication app, 
                         ViewPort port,
+                       
                         Main application,
                         Node rootN,
                         FlyByCamera fly,
@@ -66,7 +67,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         optionController.setNifty(nifty);
         mapController = new MapSelectionController(stateManager, man ,app, viewPort, application, rootN, fly);
         mapController.setNifty(nifty);
-        
+        hud = new Hud(stateManager, app, port); 
     }    
     
     
@@ -104,6 +105,10 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public void startGame(int x, int y){
         viewPort.removeProcessor(nifty);
         this.menu=false;  
+        
+        
+        
+        
        //inizializzazioni scena
        appl.thread[0]=appl.executor.submit(InitScene);
        appl.thread[1]=appl.executor.submit(InitPg);
@@ -119,7 +124,14 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        
        flycam.setDragToRotate(false);
        appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=appl.thread[4]=null;
-       viewPort.removeProcessor(nifty);      
+       
+       viewPort.removeProcessor(nifty);  
+       
+       Nifty Hud = nifty.getNifty();
+       Hud.fromXml("Interface/HUD.xml", "start", hud);
+       Hud.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
+       viewPort.addProcessor(nifty);
+        
        /**
         * fa partire la gui di selezione mappe 
        */
