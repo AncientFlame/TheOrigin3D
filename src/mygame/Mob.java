@@ -32,9 +32,9 @@ public class Mob
     control.setGravity(98f); //gravità 
     bullet.getPhysicsSpace().add(control);   
   }
-  public void updatemob()
+ /* public void updatemob()
   {
      model.setLocalTranslation(control.getPhysicsLocation()); 
-  }
+  }*/
   
 };

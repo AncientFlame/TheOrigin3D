@@ -8,6 +8,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
+import java.util.concurrent.Callable;
 
 
 public class Player 
@@ -22,9 +23,11 @@ public class Player
   public Quaternion rot; //rotazione pg
   public boolean w,a,s,d; 
   public int healt;
+  Main appl;
   
-   Player(AssetManager asset,BulletAppState bullet)
+   public Player(AssetManager asset,BulletAppState bullet,Main app)
    {
+      appl=app; 
       gradi=gradi2=0;
       w=a=s=d=false;
       healt=100;
@@ -47,11 +50,66 @@ public class Player
    
    void FirstPersonCamera(Camera cam)
    {
-       Vector3f app=control.getPhysicsLocation(); //posizioni le braccia ai 3/4 dell'altezza della capsula
+       Vector3f app=control.getPhysicsLocation(); //posizione delle braccia: 3 quarti più in alto del character control
        model[arma].setLocalTranslation(app.x,app.y+Shape.getHeight()*3f/4,app.z);
        cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
        cam_pos.set(0,-0.3f,-5); //la posizione della camera è spostata indietro di 5 e in basso 0.3 rispetto alle coordinate globali del modello
        cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
    }
-      
+   
+    public void pgMov() //gestisce il movimento (usa il future thread[0])
+    {
+      if(appl.thread[0]==null) //se il future è null fa partire il thread
+        appl.thread[0]=appl.executor.submit(pgMov_thread);
+      else
+       if(appl.thread[0].isDone()) //se il thread è finito
+       {
+         control.setWalkDirection(pos); //viene settato il walkdirection del character control
+         appl.thread[0]=null; //il future viene rimesso a null
+       }
+    }
+    
+    private Callable pgMov_thread=new Callable() //thread per calcolare l'incremento del vettore posizione 
+    {
+        public Object call() 
+        {  
+           Vector3f app=appl.getCamera().getDirection().multLocal(0.9f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
+           Vector3f app2=appl.getCamera().getLeft().multLocal(0.7f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
+           pos.set(0,0,0); //viene inizializzato il vettore a 0
+           if(w) pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
+           if(s) pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)
+           if(a) pos.addLocal(app2); //se a è premuto si somma al vettore pos il vettore app2 (aumenta x)
+           if(d) pos.addLocal(app2.negate()); //se d è premuto si sottrae al vettore pos il vettore app2 (diminuisce x)
+           
+           return 1; 
+        }
+    };
+    
+     public void setKeys(boolean pressed,int tpf)
+     {   
+       switch(tpf)
+       {
+           case 0: w=pressed; break;  
+           case 1: s=pressed; break;
+           case 2: d=pressed; break;
+           case 3: a=pressed; break;
+       }
+     }
+     
+    public void ric() //funzione per ricaricare
+    {
+      if(munizioni[arma]<munizioni_max[arma]) //se non si hanno il massimo dei proiettili
+      {
+        int app=munizioni_max[arma]-munizioni[arma]; //trova quanti proiettili mancano
+        if(caricatori[arma]-app>=0) //se nel caricatore ce ne sono abbastanza 
+        {
+           caricatori[arma]-=app; //prende proiettili dal caricatore
+           munizioni[arma]+=app; //li mette nelle munizioni disponibili per sparare
+        } else {  //i proiettili rimasti non bastano a ricaricare tutta l'arma... si usano tutti i proiettili rimasti
+                 munizioni[arma]+=caricatori[arma];
+                 caricatori[arma]=0;
+               }
+      }
+    }
+     
 };

@@ -6,13 +6,27 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.FlyByCamera;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.texture.Texture;
+import com.jme3.util.SkyFactory;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.Vector;
+import java.util.concurrent.Callable;
+import mygame.GuiGame;
 import mygame.Main;
+import mygame.Player;
+import mygame.Scene;
 import mygame.Settings;
 
 
@@ -91,11 +105,11 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         viewPort.removeProcessor(nifty);
         this.menu=false;  
        //inizializzazioni scena
-       appl.thread[0]=appl.executor.submit(appl.InitScene);
-       appl.thread[1]=appl.executor.submit(appl.InitPg);
-       appl.thread[2]=appl.executor.submit(appl.InitKeys);
-       appl.thread[3]=appl.executor.submit(appl.InitVectorMob);
-       appl.thread[4]=appl.executor.submit(appl.initGameGUI);
+       appl.thread[0]=appl.executor.submit(InitScene);
+       appl.thread[1]=appl.executor.submit(InitPg);
+       appl.thread[2]=appl.executor.submit(InitKeys);
+       appl.thread[3]=appl.executor.submit(InitVectorMob);
+       appl.thread[4]=appl.executor.submit(initGameGUI);
        //aspetta che i thread finiscano per attaccare gli spatial (se li attacchi nel thread c'è il rischio di crash)       
        while(!appl.thread[0].isDone() || !appl.thread[1].isDone() || !appl.thread[2].isDone() || !appl.thread[3].isDone() || !appl.thread[4].isDone());
        
@@ -117,7 +131,78 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         viewPort.addProcessor(nifty);
 */
     }
-
+    
+    private Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
+    {
+       public Object call()
+       {
+           appl.getInputManager().addMapping("W",new KeyTrigger(KeyInput.KEY_W));
+           appl.getInputManager().addMapping("S",new KeyTrigger(KeyInput.KEY_S));
+           appl.getInputManager().addMapping("D",new KeyTrigger(KeyInput.KEY_D));
+           appl.getInputManager().addMapping("A",new KeyTrigger(KeyInput.KEY_A));
+           appl.getInputManager().addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso destra
+           appl.getInputManager().addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso sinistra
+           appl.getInputManager().addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
+           appl.getInputManager().addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
+           appl.getInputManager().addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+           appl.getInputManager().addMapping("ricarica",new KeyTrigger(KeyInput.KEY_R));
+           appl.getInputManager().addListener(appl.PgMovement,"left","right","up","down");
+           appl.getInputManager().addListener(appl.PgMovement2,"W","S","D","A");
+           appl.getInputManager().addListener(appl.gun_action,"fire");
+           appl.getInputManager().addListener(appl.gun_action2,"ricarica");
+           return null;
+       }
+    };
+    
+    private Callable InitScene=new Callable() //thread per la scena   
+    {
+        public Object call()
+        {
+           appl.scena=new Scene(appl.getAssetManager(),viewPort,appl.bullet,0); 
+           initSky();
+           return null; 
+        }
+    };
+    
+    public Callable InitPg=new Callable() //thread per il pg
+    {
+      public Object call()
+      {
+        appl.pg=new Player(appl.getAssetManager(),appl.bullet,appl);  
+        return null;
+      }
+    };
+    
+    public Callable InitVectorMob=new Callable() //thread per il vettore di mob
+    {
+      public Object call()
+      {
+        appl.mob=new Vector(0); 
+        return null;
+      }
+    };
+    
+    public Callable initGameGUI=new Callable()
+    {
+      public Object call()  
+      {
+          appl.GUIg=new GuiGame(appl.getAssetManager());
+          return null;
+      }  
+    };
+    
+    private void initSky(){
+        Texture west = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyRight2048.png");
+        Texture east = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyLeft2048.png");
+        Texture north = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyFront2048.png");
+        Texture south = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyBack2048.png");
+        Texture up = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyUp2048.png");
+        Texture down = appl.getAssetManager().loadTexture("Textures/DarkStormy/DarkStormyDown2048.png");
+                                                    
+        Spatial sky = SkyFactory.createSky(appl.getAssetManager(), west, east, north, south, up, down, Vector3f.UNIT_XYZ);
+        appl.getRootNode().attachChild(sky);
+    } 
+    
     public void bind(Nifty nifty, Screen screen) {
         
     }

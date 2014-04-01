@@ -6,7 +6,8 @@ import com.jme3.ui.Picture;
 public class GuiGame 
 {
   public Picture pointer;  
-  GuiGame(AssetManager asset)
+  
+  public GuiGame(AssetManager asset)
   {
     pointer=new Picture("pointerimagine");
     pointer.setImage(asset,"Interface/pointer.png", true);

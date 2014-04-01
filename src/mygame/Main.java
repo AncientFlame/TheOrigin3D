@@ -5,23 +5,15 @@ import mygame.guiController.StartGUIController;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResults;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseAxisTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
-import com.jme3.scene.Spatial;
 import com.jme3.system.JmeContext;
-import com.jme3.texture.Texture;
-import com.jme3.util.SkyFactory;
 import de.lessvoid.nifty.Nifty;
 import java.util.Random;
 import java.util.Vector;
@@ -37,10 +29,12 @@ public class Main extends SimpleApplication
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
     public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[4]
-    private BulletAppState bullet; //serve per la fisica
+    public BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
     public Player pg;
     public GuiGame GUIg;
+    
+    Vector2f coord,appoggio; 
     
  //variabili proiettile   
     BulletRapidFireGun bullet1;
@@ -50,9 +44,8 @@ public class Main extends SimpleApplication
     private int round; //round attuale
     private int n_mob; //numero mob creati
     private int r_mob; //mob rimasti 
-    private Vector3f spawnPoint[]=new Vector3f[4];
     private static Main app;
-Vector2f coord,appoggio;
+   
     public static void main(String[] args) 
     {
         app = new Main();
@@ -92,14 +85,14 @@ Vector2f coord,appoggio;
     { 
        if(startController.menu==false)
        {   
-         pgMov();
+         pg.pgMov(); //thread[0]
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
            mobCreate(); //crea un mob
     
          if(r_mob>0) //ci sono mob vivi
          {
-           mobFollowPg();  
+           mobFollowPg();  //thread[4]
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();
@@ -112,55 +105,8 @@ Vector2f coord,appoggio;
     public void simpleRender(RenderManager rm) 
     { 
     }
-//---------------------scena      
-    public Callable InitScene=new Callable() //thread per la scena   
-    {
-        public Object call()
-        {
-           scena=new Scene(assetManager,viewPort,bullet); 
-           initSky();
-           return null; 
-        }
-    };
-//---------------------pg    
-    public Callable InitPg=new Callable() //thread per il pg
-    {
-      public Object call()
-      {
-        pg=new Player(assetManager,bullet);  
-        return null;
-      }
-    };
     
-    private Callable pgMov_thread=new Callable() //thread per calcolare l'incremento del vettore posizione 
-    {
-        public Object call() 
-        {  
-           Vector3f app=cam.getDirection().multLocal(0.9f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
-           Vector3f app2=cam.getLeft().multLocal(0.7f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
-           pg.pos.set(0,0,0); //viene inizializzato il vettore a 0
-           if(pg.w) pg.pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
-           if(pg.s) pg.pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)
-           if(pg.a) pg.pos.addLocal(app2); //se a è premuto si somma al vettore pos il vettore app2 (aumenta x)
-           if(pg.d) pg.pos.addLocal(app2.negate()); //se d è premuto si sottrae al vettore pos il vettore app2 (diminuisce x)
-           
-           return 1; 
-        }
-    };
-    
-    private void pgMov() //gestisce il movimento (usa il future thread[0])
-    {
-      if(thread[0]==null) //se il future è null fa partire il thread
-        thread[0]=executor.submit(pgMov_thread);
-      else
-       if(thread[0].isDone()) //se il thread è finito
-       {
-         pg.control.setWalkDirection(pg.pos); //viene settato il walkdirection del character control
-         thread[0]=null; //il future viene rimesso a null
-       }
-    }
-    
-    private AnalogListener PgMovement=new AnalogListener() //analog listener per il movimento delle braccia
+    public AnalogListener PgMovement=new AnalogListener() //analog listener per la rotazione delle braccia
     {
         public void onAnalog(String name, float value, float tpf) 
         { 
@@ -193,48 +139,23 @@ Vector2f coord,appoggio;
         }         
     };
     
-    private ActionListener PgMovement2=new ActionListener() //action listener gestione WASD
+    public ActionListener PgMovement2=new ActionListener() //action listener gestione WASD
     {
         public void onAction(String key,boolean pressed,float tpf)
         {
-            if(key.equals("W"))
-             pg.w=pressed; 
-
-            if(key.equals("S"))
-             pg.s=pressed; 
-
-            if(key.equals("D"))
-              pg.d=pressed;
- 
-            if(key.equals("A"))
-              pg.a=pressed; 
+           if(key.equals("W"))
+            pg.setKeys(pressed,0);
+           if(key.equals("S"))
+            pg.setKeys(pressed,1);
+           if(key.equals("D"))
+            pg.setKeys(pressed,2);
+           if(key.equals("A"))
+            pg.setKeys(pressed,3);
         }
     };
     
- //--------------------------listener   
-    public Callable InitKeys=new Callable() //thread che inizializza la mappa dei tasti
-    {
-       public Object call()
-       {
-           inputManager.addMapping("W",new KeyTrigger(KeyInput.KEY_W));
-           inputManager.addMapping("S",new KeyTrigger(KeyInput.KEY_S));
-           inputManager.addMapping("D",new KeyTrigger(KeyInput.KEY_D));
-           inputManager.addMapping("A",new KeyTrigger(KeyInput.KEY_A));
-           inputManager.addMapping("right",new MouseAxisTrigger(MouseInput.AXIS_X, false)); //movimento mouse verso destra
-           inputManager.addMapping("left",new MouseAxisTrigger(MouseInput.AXIS_X, true)); //movimento mouse verso sinistra
-           inputManager.addMapping("down",new MouseAxisTrigger(MouseInput.AXIS_Y, true)); //movimento mouse verso il basso
-           inputManager.addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
-           inputManager.addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-           inputManager.addMapping("ricarica",new KeyTrigger(KeyInput.KEY_R));
-           inputManager.addListener(PgMovement,"left","right","up","down");
-           inputManager.addListener(PgMovement2,"W","S","D","A");
-           inputManager.addListener(gun_action,"fire");
-           inputManager.addListener(gun_action2,"ricarica");
-           return null;
-       }
-    };
  //--------------------arma
-    private AnalogListener gun_action=new AnalogListener() 
+    public AnalogListener gun_action=new AnalogListener() 
     {
       @SuppressWarnings("empty-statement")
       public void onAnalog(String key,float value,float tpf)
@@ -268,35 +189,19 @@ Vector2f coord,appoggio;
              
              pg.munizioni[pg.arma]--;
            } else
-               ric();
+               pg.ric();
          }
       }
     };
     
-    private ActionListener gun_action2=new ActionListener()
+    public ActionListener gun_action2=new ActionListener()
     {
        public void onAction(String key,boolean pressed,float tpf)
        {
           if(key.equals("ricarica") && !pressed)
-            ric();
+            pg.ric();
        }
     };
-    
-    private void ric() //funzione per ricaricare
-    {
-      if(pg.munizioni[pg.arma]<pg.munizioni_max[pg.arma]) //se non si hanno il massimo dei proiettili
-      {
-        int app=pg.munizioni_max[pg.arma]-pg.munizioni[pg.arma]; //trova quanti proiettili mancano
-        if(pg.caricatori[pg.arma]-app>=0) //se nel caricatore ce ne sono abbastanza 
-        {
-           pg.caricatori[pg.arma]-=app; //prende proiettili dal caricatore
-           pg.munizioni[pg.arma]+=app; //li mette nelle munizioni disponibili per sparare
-        } else {  //i proiettili rimasti non bastano a ricaricare tutta l'arma... si usano tutti i proiettili rimasti
-                 pg.munizioni[pg.arma]+=pg.caricatori[pg.arma];
-                 pg.caricatori[pg.arma]=0;
-               }
-      }
-    }
     
     private Callable bullMob=new Callable() //collisioni proiettili mob thread[3]
     {
@@ -349,23 +254,10 @@ Vector2f coord,appoggio;
     
  //-----------------------mob   
     
-    public Callable InitVectorMob=new Callable() //thread per il vettore di mob
-    {
-      public Object call()
-      {
-        mob=new Vector(0); 
-        spawnPoint[0]=new Vector3f(-946,11,957);
-        spawnPoint[1]=new Vector3f(936,11,927);
-        spawnPoint[2]=new Vector3f(947,11,-984);
-        spawnPoint[3]=new Vector3f(-953,11,-947);
-        return null;
-      }
-    };
-    
     private void mobCreate() //gestisce la creazione dei mob 
     {  
        Random rand=new Random(); 
-       mob.addElement(new Mob(assetManager,bullet,spawnPoint[rand.nextInt(4)]));
+       mob.addElement(new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]));
        rootNode.attachChild(mob.elementAt(n_mob).model);
        n_mob++;
     }
@@ -384,7 +276,6 @@ Vector2f coord,appoggio;
         thread[4]=executor.submit(FollowPg);
       else if(thread[4].isDone())
            {
-              //....operazioni dopo la fine del thread
               thread[4]=null; //rimesso a null per ripartire
            }  
     }
@@ -427,14 +318,6 @@ Vector2f coord,appoggio;
         flyCam.setDragToRotate(true);
     }
     
-    public Callable initGameGUI=new Callable()
-    {
-      public Object call()  
-      {
-          GUIg=new GuiGame(assetManager);
-          return null;
-      }  
-    };
 //----------gameplay
     private void updateround()
     {
@@ -445,6 +328,7 @@ Vector2f coord,appoggio;
           r_mob=round;
        }
     }
+    
     @Override
     public void destroy()
     {
@@ -452,15 +336,4 @@ Vector2f coord,appoggio;
       executor.shutdown(); //stoppa i thread
     }
                                
-    private void initSky(){
-        Texture west = assetManager.loadTexture("Textures/DarkStormy/DarkStormyRight2048.png");
-        Texture east = assetManager.loadTexture("Textures/DarkStormy/DarkStormyLeft2048.png");
-        Texture north = assetManager.loadTexture("Textures/DarkStormy/DarkStormyFront2048.png");
-        Texture south = assetManager.loadTexture("Textures/DarkStormy/DarkStormyBack2048.png");
-        Texture up = assetManager.loadTexture("Textures/DarkStormy/DarkStormyUp2048.png");
-        Texture down = assetManager.loadTexture("Textures/DarkStormy/DarkStormyDown2048.png");
-                                                    
-        Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down, Vector3f.UNIT_XYZ);
-        rootNode.attachChild(sky);
-    } 
 };
