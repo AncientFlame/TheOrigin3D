@@ -11,6 +11,7 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
@@ -124,7 +125,9 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        
        flycam.setDragToRotate(false);
        appl.thread[0]=appl.thread[1]=appl.thread[2]=appl.thread[3]=appl.thread[4]=null;
-       
+       appl.coord=appl.getInputManager().getCursorPosition();  
+       appl.appoggio=new Vector2f();
+       appl.appoggio.x=appl.coord.x; appl.appoggio.y=appl.coord.y;
        viewPort.removeProcessor(nifty);  
        
        Nifty Hud = nifty.getNifty();

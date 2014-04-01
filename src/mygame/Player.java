@@ -34,14 +34,14 @@ public class Player
       gradi=gradi2=0;
       w=a=s=d=false;
       healt=100;
-      
+
       munizioni=new int[1];
       caricatori=new int[1];
       munizioni_max=new int[1];
       caricatori_max=new int[1];
       munizioni[0]=25; caricatori[0]=100; munizioni_max[0]=25; caricatori_max[0]=100; //arma 0
       arma=0;
-      
+
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
       
@@ -61,9 +61,10 @@ public class Player
    {
        Vector3f app=control.getPhysicsLocation(); //posizione delle braccia: 3 quarti più in alto del character control
        model[arma].setLocalTranslation(app.x,app.y+Shape.getHeight()*3f/4,app.z);
-       cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
        cam_pos.set(0,-0.3f,-5); //la posizione della camera è spostata indietro di 5 e in basso 0.3 rispetto alle coordinate globali del modello
        cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
+       cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
+       //cam.setLocation(new Vector3f(app.x,app.y+Shape.getHeight()*3f/4,app.z));
    }
    
     public void pgMov() //gestisce il movimento (usa il future thread[0])
@@ -82,8 +83,8 @@ public class Player
     {
         public Object call() 
         {  
-           Vector3f app=appl.getCamera().getDirection().multLocal(0.9f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
-           Vector3f app2=appl.getCamera().getLeft().multLocal(0.7f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
+           Vector3f app=appl.getCamera().getDirection().multLocal(0.6f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
+           Vector3f app2=appl.getCamera().getLeft().multLocal(0.4f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
            pos.set(0,0,0); //viene inizializzato il vettore a 0
            if(w) pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
            if(s) pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)

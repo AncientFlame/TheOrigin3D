@@ -34,7 +34,7 @@ public class Main extends SimpleApplication
     public Player pg;
     public GuiGame GUIg;
     
-    Vector2f coord,appoggio; 
+    public Vector2f coord,appoggio; 
   
     //variabili per gestire i mob
     public Vector<Mob>mob;
@@ -68,13 +68,10 @@ public class Main extends SimpleApplication
        stateManager.attach(bullet);
        
        r_mob=round=1; n_mob=0;
-       flyCam.setEnabled(true);
+       flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
        cam.setFrustumFar(3000); //distanza di visibilità della camera
-       coord=inputManager.getCursorPosition();  
-       appoggio=new Vector2f();
-       appoggio.x=coord.x; appoggio.y=coord.y;
     }
 
     @Override
@@ -132,7 +129,7 @@ public class Main extends SimpleApplication
            quat.fromAngleAxis(FastMath.PI*pg.gradi/180,Vector3f.UNIT_Y); //ruota il quaternione di pg.gradi sull'asse y
            quat2.fromAngleAxis(FastMath.PI*pg.gradi2/180,Vector3f.UNIT_X);  //ruota il quaternione di pg.gradi2 sull'asse x
            pg.rot=quat.mult(quat2); //combina le rotazioni su y e su x in un terzo quaternione 
-           pg.model[pg.arma].setLocalRotation(pg.rot);  
+           pg.model[pg.arma].setLocalRotation(pg.rot); 
         }         
     };
     
