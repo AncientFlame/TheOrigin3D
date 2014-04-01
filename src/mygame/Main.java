@@ -35,9 +35,6 @@ public class Main extends SimpleApplication
     public GuiGame GUIg;
     
     Vector2f coord,appoggio; 
-    
- //variabili proiettile   
-    BulletRapidFireGun bullet1;
   
     //variabili per gestire i mob
     public Vector<Mob>mob;
@@ -122,12 +119,12 @@ public class Main extends SimpleApplication
            }
            if(name.equals("up")) //rotazione braccia verso l'alto
            { 
-              if(pg.gradi2-(coord.y-appoggio.y)/4>=-35) pg.gradi2-=(coord.y-appoggio.y)/4;  
+              if(pg.gradi2-(coord.y-appoggio.y)/6>=-35) pg.gradi2-=(coord.y-appoggio.y)/6;  
               appoggio.y=coord.y;
            }
            if(name.equals("down")) //rotazione braccia verso il basso
            {
-             if(pg.gradi2-(coord.y-appoggio.y)/4<=40) pg.gradi2-=(coord.y-appoggio.y)/4;  
+             if(pg.gradi2-(coord.y-appoggio.y)/6<=40) pg.gradi2-=(coord.y-appoggio.y)/6;  
              appoggio.y=coord.y;
            }
            Quaternion quat=new Quaternion();
@@ -151,6 +148,8 @@ public class Main extends SimpleApplication
             pg.setKeys(pressed,2);
            if(key.equals("A"))
             pg.setKeys(pressed,3);
+           if(key.equals("jump"))
+            pg.control.jump();
         }
     };
     
@@ -164,29 +163,24 @@ public class Main extends SimpleApplication
          {
            if(pg.munizioni[pg.arma]>0)
            {
-             if(pg.arma==0) //mitragliatrice->usa semiretta 
-                bullet1=new BulletRapidFireGun(10f,pg.model[pg.arma].getLocalTranslation(),cam.getDirection());
-  
-             thread[2]=executor.submit(bullScene);
-             thread[3]=executor.submit(bullMob);
-             while(!thread[2].isDone() || !thread[3].isDone());
-             //System.out.println(bullet1.dist_m+" "+bullet1.dist_s);
-             switch(pg.arma)
-             {
-                 case 0: {     //se la collisione più vicina è quella con il mob o se è entrato in collisione solo con il mob
-                            if( (bullet1.dist_m<bullet1.dist_s && bullet1.dist_m!=-1) || (bullet1.dist_m!=-1 && bullet1.dist_s==-1) ) 
-                            {
-                                mob.elementAt(bullet1.indice).healt-=bullet1.damage; //decremento vita mob
-                                if(mob.elementAt(bullet1.indice).healt<=0) //mob morto
-                                {
-                                   rootNode.detachChild(mob.elementAt(bullet1.indice).model); //leva il mob dal vettore e dal rootNode
-                                   mob.removeElementAt(bullet1.indice);
-                                   r_mob--; //mob rimasti
-                                }
-                            } 
-                         } break; 
+             if(pg.arma==0) //se si sta usando una mitragliatrice le collisioni vengono verificate subito
+             {    
+               pg.bullet1=new BulletRapidFireGun(10f*(pg.arma+1),pg.model[pg.arma].getLocalTranslation(),cam.getDirection(),app);
+               thread[2]=executor.submit(pg.bullet1.bullScene);
+               thread[3]=executor.submit(pg.bullet1.bullMob);
+               while(!thread[2].isDone() || !thread[3].isDone());
+                  //se la collisione più vicina è quella con il mob o se è entrato in collisione solo con il mob
+               if( (pg.bullet1.dist_m<pg.bullet1.dist_s && pg.bullet1.dist_m!=-1) || (pg.bullet1.dist_m!=-1 && pg.bullet1.dist_s==-1) ) 
+               {
+                  mob.elementAt(pg.bullet1.indice).healt-=pg.bullet1.damage; //decremento vita mob
+                  if(mob.elementAt(pg.bullet1.indice).healt<=0) //mob morto
+                  { 
+                     rootNode.detachChild(mob.elementAt(pg.bullet1.indice).model); //leva il mob dal vettore e dal rootNode
+                     mob.removeElementAt(pg.bullet1.indice);
+                     r_mob--; //mob rimasti
+                  }
+               }
              }
-             
              pg.munizioni[pg.arma]--;
            } else
                pg.ric();
@@ -202,56 +196,7 @@ public class Main extends SimpleApplication
             pg.ric();
        }
     };
-    
-    private Callable bullMob=new Callable() //collisioni proiettili mob thread[3]
-    {
-      public Object call()
-      {
-        CollisionResults result=new CollisionResults();
-        for(int i=0; i<mob.capacity(); i++)
-        {
-           if(pg.arma==0) 
-             bullet1.bullet_dir.clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
-           
-           if(result.size()>0) //trova collisione più vicina
-           { 
-             for(int j=0; j<result.size(); j++)
-                switch(pg.arma)
-                {
-                    case 0: {
-                              if(result.getCollision(j).getDistance()<bullet1.dist_m || bullet1.dist_m==-1)
-                              {
-                                 bullet1.dist_m=result.getCollision(j).getDistance();
-                                 bullet1.indice=i;
-                              }  
-                            } break;
-                }
-           }
-        }
-        return null;  
-      }
-    };
-    
-    private Callable bullScene=new Callable() //collisioni proiettili scena thread[2]
-    {
-         public Object call()
-         {
-              CollisionResults result=new CollisionResults(); 
-              if(pg.arma==0) 
-               scena.SceneModel.clone().collideWith(bullet1.bullet_dir.clone(),result); //calcola collisioni
-              if(result.size()>0) //ci sono collisioni
-                for(int i=0; i<result.size(); i++) //trova la collisione più vicina
-                  switch(pg.arma)
-                  {
-                     case 0: {  
-                               if(result.getCollision(i).getDistance()<bullet1.dist_s || bullet1.dist_s==-1 )
-                                 bullet1.dist_s=result.getCollision(i).getDistance(); 
-                             } break;
-                 }
-               return null; 
-         }
-    };
-    
+   
  //-----------------------mob   
     
     private void mobCreate() //gestisce la creazione dei mob 

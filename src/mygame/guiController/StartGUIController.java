@@ -146,8 +146,9 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
            appl.getInputManager().addMapping("up",new MouseAxisTrigger(MouseInput.AXIS_Y, false)); //movimento mouse verso l'alto
            appl.getInputManager().addMapping("fire",new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
            appl.getInputManager().addMapping("ricarica",new KeyTrigger(KeyInput.KEY_R));
+           appl.getInputManager().addMapping("jump",new KeyTrigger(KeyInput.KEY_SPACE));
            appl.getInputManager().addListener(appl.PgMovement,"left","right","up","down");
-           appl.getInputManager().addListener(appl.PgMovement2,"W","S","D","A");
+           appl.getInputManager().addListener(appl.PgMovement2,"W","S","D","A","jump");
            appl.getInputManager().addListener(appl.gun_action,"fire");
            appl.getInputManager().addListener(appl.gun_action2,"ricarica");
            return null;
