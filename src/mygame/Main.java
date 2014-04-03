@@ -59,7 +59,7 @@ public class Main extends SimpleApplication
                                             audioRenderer,
                                             guiViewPort);
         //inizializzo il controller
-        startController = new StartGUIController(stateManager,assetManager, app, guiViewPort, this, rootNode, flyCam,guiNode);
+        startController = new StartGUIController(stateManager,assetManager, app, guiViewPort,viewPort, this, rootNode, flyCam,guiNode);
         initStartGUI();
         startController.setNifty(niftyDisplay);
 
@@ -71,7 +71,7 @@ public class Main extends SimpleApplication
        flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
-       cam.setFrustumFar(3000); //distanza di visibilità della camera
+       cam.setFrustumFar(500); //distanza di visibilità della camera
     }
 
     @Override

@@ -11,9 +11,12 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -34,12 +37,13 @@ import mygame.Settings;
 public class StartGUIController extends AbstractAppState implements ScreenController{
     private NiftyJmeDisplay nifty;
 
-    private ViewPort viewPort;
-    
+    private ViewPort guiViewPort; //per la gui
+    private ViewPort viewPort; //per gli effetti grafici
 
     private MapSelectionController mapController;
     private OptionGUIController optionController;
-    //private Screen screen;
+    
+    private AssetManager man;
     private SimpleApplication app;
     public boolean menu=true;
     public Main appl;
@@ -52,7 +56,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
                         AssetManager man,
                         SimpleApplication app, 
                         ViewPort port,
-                       
+                        ViewPort viewPort,
                         Main application,
                         Node rootN,
                         FlyByCamera fly,
@@ -62,13 +66,15 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         appl=application;
         super.initialize(stateManager, app);
         this.app=(SimpleApplication)app;
-        viewPort = port;
+        guiViewPort = port;
+        this.viewPort =viewPort;
         guiNode2=guiN;
-        optionController = new OptionGUIController(stateManager, app, viewPort);
+        optionController = new OptionGUIController(stateManager, app, guiViewPort);
         optionController.setNifty(nifty);
-        mapController = new MapSelectionController(stateManager, man ,app, viewPort, application, rootN, fly);
+        mapController = new MapSelectionController(stateManager, man ,app, guiViewPort, application, rootN, fly);
         mapController.setNifty(nifty);
         hud = new Hud(stateManager, app, port); 
+        this.man = man; 
     }    
     
     
@@ -94,7 +100,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         Nifty niftyOption = nifty.getNifty();
         niftyOption.fromXml("Interface/option.xml", "start", optionController);
         niftyOption.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
-        viewPort.addProcessor(nifty);
+        guiViewPort.addProcessor(nifty);
     }
     public void quitGame(int x, int y){
         nifty.cleanup();
@@ -104,7 +110,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
    
     @SuppressWarnings("empty-statement")
     public void startGame(int x, int y){
-        viewPort.removeProcessor(nifty);
+        guiViewPort.removeProcessor(nifty);
         this.menu=false;  
         
         
@@ -128,12 +134,12 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
        appl.coord=appl.getInputManager().getCursorPosition();  
        appl.appoggio=new Vector2f();
        appl.appoggio.x=appl.coord.x; appl.appoggio.y=appl.coord.y;
-       viewPort.removeProcessor(nifty);  
+       guiViewPort.removeProcessor(nifty);  
        
        Nifty Hud = nifty.getNifty();
        Hud.fromXml("Interface/HUD.xml", "start", hud);
        Hud.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
-       viewPort.addProcessor(nifty);
+       guiViewPort.addProcessor(nifty);
         
        /**
         * fa partire la gui di selezione mappe 
@@ -143,7 +149,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         niftyOption.fromXml("Interface/mapSelection.xml", "start", mapController);
         niftyOption.enableAutoScaling(Settings.system.getWidth(), Settings.system.getHeight());
         mapController.setNifty(nifty);
-        viewPort.addProcessor(nifty);
+        guiViewPort.addProcessor(nifty);
 */
     }
     
@@ -174,8 +180,18 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     {
         public Object call()
         {
-           appl.scena=new Scene(appl.getAssetManager(),viewPort,appl.bullet,0); 
+           appl.scena=new Scene(appl.getAssetManager(),guiViewPort,appl.bullet,0); 
            initSky();
+           
+            /** Add fog to a scene */
+            FilterPostProcessor fpp=new FilterPostProcessor(man);
+            FogFilter fog=new FogFilter();
+            fog.setFogColor(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
+            fog.setFogDistance(300);
+            fog.setFogDensity(2.0f);
+            fpp.addFilter(fog);
+            viewPort.addProcessor(fpp);
+
            return null; 
         }
     };
