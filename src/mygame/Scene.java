@@ -32,10 +32,14 @@ public class Scene
          SceneModel=assetManager.loadModel("Models/mappa1.j3o"); //carica modello 
          SceneModel.setMaterial(mat); //da levare quando ci saranno le texture
 
-         spawnPoint[0]=new Vector3f(-946,11,957);
+        /* spawnPoint[0]=new Vector3f(-946,11,957);
          spawnPoint[1]=new Vector3f(936,11,927);
          spawnPoint[2]=new Vector3f(947,11,-984);
-         spawnPoint[3]=new Vector3f(-953,11,-947);
+         spawnPoint[3]=new Vector3f(-953,11,-947);*/
+          spawnPoint[0]=new Vector3f(20,11,20);
+         spawnPoint[1]=new Vector3f(20,11,20);
+         spawnPoint[2]=new Vector3f(20,11,20);
+         spawnPoint[3]=new Vector3f(20,11,20);
       } break;
      }
        

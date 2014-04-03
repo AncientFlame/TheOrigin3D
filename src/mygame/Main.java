@@ -91,6 +91,7 @@ public class Main extends SimpleApplication
          }
          updateround();
          pg.FirstPersonCamera(cam);
+         //System.out.println(pg.model_node.getLocalTranslation());
        }
     }
     
@@ -243,7 +244,8 @@ public class Main extends SimpleApplication
          for(int i=0; i<mob.capacity(); i++)
          { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
-            pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+           // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+             pg.model_node.clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
             if(result.size()>0)
               pg.healt-=mob.elementAt(i).attack;
          }
