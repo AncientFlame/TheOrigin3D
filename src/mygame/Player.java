@@ -2,7 +2,6 @@ package mygame;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -18,7 +17,6 @@ public class Player
   
   public int arma,munizioni[],caricatori[],munizioni_max[],caricatori_max[];
   
-  public CapsuleCollisionShape Shape;
   public BetterCharacterControl control;
   public float gradi,gradi2; //gradi->rotazione mouse su asse x gradi2->rotazione mouse su asse y
   public Vector3f pos; //posizione pg
@@ -49,24 +47,18 @@ public class Player
       
       model[0]=asset.loadModel("Models/braccio/braccio2.j3o");
       
-      Shape=new CapsuleCollisionShape(2.5f, 6f); //primo parametro raggio,secondo altezza della capsula
-      control=new BetterCharacterControl(2.5f,6f,0.5f); //crea character control
-      //control.setPhysicsLocation(new Vector3f(10,5,10)); //posizione character control
-      model[0].setLocalTranslation(10,5+Shape.getHeight()*3/4,10); 
-      model_node.setLocalTranslation(10,5,10);
-      model_node.addControl(control);
+      control=new BetterCharacterControl(1.5f,6f,0.5f); //crea character control
+      model[0].setLocalTranslation(10,11,10); 
+      model_node.setLocalTranslation(10,1.8f,10);
+      model_node.addControl(control); 
       model_node.attachChild(model[0]);
-      control.setGravity(new Vector3f(0,-9.8f,0)); //gravità 
-      //control.setJumpSpeed(80f);
-      //control.setFallSpeed(200f);
+      control.setGravity(new Vector3f(0,-98f,0)); //gravità 
+
       bullet.getPhysicsSpace().add(control);
    }
    
    void FirstPersonCamera(Camera cam)
    {
-       //Vector3f app=control.getPhysicsLocation(); //posizione delle braccia: 3 quarti più in alto del character control
-       //Vector3f app=model_node.getLocalTranslation();
-       //model[arma].setLocalTranslation(app.x,app.y+Shape.getHeight()*3f/4,app.z);
        cam_pos.set(0,-0.3f,-5); //la posizione della camera è spostata indietro di 5 e in basso 0.3 rispetto alle coordinate globali del modello
        cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
        cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
@@ -88,8 +80,10 @@ public class Player
     {
         public Object call() 
         {  
-           Vector3f app=appl.getCamera().getDirection().multLocal(3f); //prende direzione della telecamera e la moltiplica per 0.6 (accorcia lunghezza del vettore)
-           Vector3f app2=appl.getCamera().getLeft().multLocal(3f); //prende direzione sinistra della telecamera e la moltiplica per 0.4 (accorcia lunghezza vettore)
+  
+           Vector3f app=appl.getCamera().getDirection(); //prende direzione della telecamera 
+           app.set(app.x,0,app.z).multLocal(10f); 
+           Vector3f app2=appl.getCamera().getLeft().multLocal(10f); //prende direzione sinistra della telecamera 
            pos.set(0,0,0); //viene inizializzato il vettore a 0
            if(w) pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
            if(s) pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)

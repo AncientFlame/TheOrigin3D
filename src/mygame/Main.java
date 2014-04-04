@@ -25,7 +25,7 @@ public class Main extends SimpleApplication
 {
     private NiftyJmeDisplay niftyDisplay;
     private StartGUIController startController;
- 
+
     
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
     public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[4]
@@ -68,17 +68,17 @@ public class Main extends SimpleApplication
        stateManager.attach(bullet);
        
        r_mob=round=1; n_mob=0;
-       flyCam.setEnabled(false);
+       flyCam.setEnabled(true);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
-       cam.setFrustumFar(500); //distanza di visibilità della camera
+       cam.setFrustumFar(3000); //distanza di visibilità della camera
     }
 
     @Override
     public void simpleUpdate(float tpf)
     { 
        if(startController.menu==false)
-       {   
+       {     pg.FirstPersonCamera(cam);
          pg.pgMov(); //thread[0]
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
@@ -91,7 +91,6 @@ public class Main extends SimpleApplication
          }
          updateround();
          pg.FirstPersonCamera(cam);
-         //System.out.println(pg.model_node.getLocalTranslation());
        }
     }
     
