@@ -78,7 +78,7 @@ public class Main extends SimpleApplication
     public void simpleUpdate(float tpf)
     { 
        if(startController.menu==false)
-       {     pg.FirstPersonCamera(cam);
+       {     
          pg.pgMov(); //thread[0]
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
@@ -244,7 +244,7 @@ public class Main extends SimpleApplication
          { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
            // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
-             pg.model_node.clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+             pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
             if(result.size()>0)
               pg.healt-=mob.elementAt(i).attack;
          }

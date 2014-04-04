@@ -51,7 +51,7 @@ public class Player
       model[0].setLocalTranslation(10,11,10); 
       model_node.setLocalTranslation(10,1.8f,10);
       model_node.addControl(control); 
-      model_node.attachChild(model[0]);
+      //model_node.attachChild(model[0]);
       control.setGravity(new Vector3f(0,-98f,0)); //gravità 
 
       bullet.getPhysicsSpace().add(control);
@@ -59,6 +59,8 @@ public class Player
    
    void FirstPersonCamera(Camera cam)
    {
+       Vector3f app=model_node.getLocalTranslation();
+       model[arma].setLocalTranslation(app.x,app.y+10,app.z);
        cam_pos.set(0,-0.3f,-5); //la posizione della camera è spostata indietro di 5 e in basso 0.3 rispetto alle coordinate globali del modello
        cam.setLocation(model[arma].localToWorld(cam_pos,cam_pos));
        cam.setRotation(model[arma].getLocalRotation()); //da la rotazione alla camera (la stessa del pg)
