@@ -30,9 +30,5 @@ public class Mob
     bullet.getPhysicsSpace().add(control);   
     
   }
- /* public void updatemob()
-  {
-     model.setLocalTranslation(control.getPhysicsLocation()); 
-  }*/
   
 };

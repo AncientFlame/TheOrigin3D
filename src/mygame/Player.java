@@ -84,8 +84,8 @@ public class Player
         {  
   
            Vector3f app=appl.getCamera().getDirection(); //prende direzione della telecamera 
-           app.set(app.x,0,app.z).multLocal(10f); 
-           Vector3f app2=appl.getCamera().getLeft().multLocal(10f); //prende direzione sinistra della telecamera 
+           app.set(app.x,0,app.z).multLocal(40f); 
+           Vector3f app2=appl.getCamera().getLeft().multLocal(40f); //prende direzione sinistra della telecamera 
            pos.set(0,0,0); //viene inizializzato il vettore a 0
            if(w) pos.addLocal(app); //se w è premuto si aumenta somma al vettore pos il vettore app (aumenta z)
            if(s) pos.addLocal(app.negate()); //se s è premuto si sottrae al vettore pos il vettore app (diminuisce z)
@@ -95,7 +95,7 @@ public class Player
            return 1; 
         }
     };
-    
+   
      public void setKeys(boolean pressed,int tpf)
      {   
        switch(tpf)

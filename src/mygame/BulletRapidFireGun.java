@@ -25,7 +25,7 @@ public class BulletRapidFireGun
       public Object call()
       {
         CollisionResults result=new CollisionResults();
-        for(int i=0; i<appl.mob.capacity(); i++)
+        for(int i=0; i<appl.r_mob-(appl.round-appl.n_mob); i++)
         {
            bullet_dir.clone().collideWith(appl.mob.elementAt(i).model.clone().getWorldBound(),result); 
            if(result.size()>0) //trova collisione più vicina

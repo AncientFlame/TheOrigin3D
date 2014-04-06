@@ -38,9 +38,9 @@ public class Main extends SimpleApplication
   
     //variabili per gestire i mob
     public Vector<Mob>mob;
-    private int round; //round attuale
-    private int n_mob; //numero mob creati
-    private int r_mob; //mob rimasti 
+    public int round; //round attuale
+    public int n_mob; //numero mob creati
+    public int r_mob; //mob rimasti 
     private static Main app;
    
     public static void main(String[] args) 
@@ -67,8 +67,8 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       r_mob=round=1; n_mob=0;
-       flyCam.setEnabled(true);
+       r_mob=round=20; n_mob=0;
+       flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
        cam.setFrustumFar(3000); //distanza di visibilità della camera
@@ -89,8 +89,8 @@ public class Main extends SimpleApplication
            mobFollowPg();  //thread[4]
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
-         updateround();
-         pg.FirstPersonCamera(cam);
+         updateround();  
+         pg.FirstPersonCamera(cam); System.out.println(n_mob);
        }
     }
     
@@ -200,8 +200,8 @@ public class Main extends SimpleApplication
     {  
        Random rand=new Random(); 
        mob.addElement(new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]));
-       rootNode.attachChild(mob.elementAt(n_mob).model);
-       n_mob++;
+       rootNode.attachChild(mob.elementAt(n_mob-(round-r_mob)).model);
+       n_mob++; 
     }
     
     private Callable FollowPg=new Callable()
@@ -240,7 +240,7 @@ public class Main extends SimpleApplication
       public Object call()
       {
          CollisionResults result=new CollisionResults(); 
-         for(int i=0; i<mob.capacity(); i++)
+         for(int i=0; i<r_mob-(round-n_mob); i++)
          { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
            // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
@@ -264,7 +264,7 @@ public class Main extends SimpleApplication
 //----------gameplay
     private void updateround()
     {
-       if(r_mob==0)
+       if(mob.isEmpty())
        {
           round++;
           n_mob=0;
