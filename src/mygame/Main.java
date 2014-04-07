@@ -67,7 +67,7 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       r_mob=round=20; n_mob=0;
+       r_mob=round=1; n_mob=0;
        flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
@@ -83,14 +83,14 @@ public class Main extends SimpleApplication
          
          if(n_mob<round) //se i mob creati sono inferiori ai mob da creare
            mobCreate(); //crea un mob
-    
+
          if(r_mob>0) //ci sono mob vivi
          {
            mobFollowPg();  //thread[4]
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();  
-         pg.FirstPersonCamera(cam); System.out.println(n_mob);
+         pg.FirstPersonCamera(cam); System.out.println(round);
        }
     }
     
