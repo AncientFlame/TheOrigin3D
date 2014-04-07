@@ -5,6 +5,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.input.FlyByCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -49,6 +50,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     public Main appl;
     public Node rootNode2;
     public Node guiNode2;
+    private AudioNode music;
     public FlyByCamera flycam;
     public Hud hud;
 
@@ -75,11 +77,17 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
         mapController.setNifty(nifty);
         hud = new Hud(stateManager, app, port); 
         this.man = man; 
+        /* gun shot sound is to be triggered by a mouse click. */
+        music = new AudioNode(man, "Interface/Sounds/music.wav", false);
+        music.setPositional(false);
+        music.setLooping(true);
+        music.setVolume(4);
+        rootNode2.attachChild(music);
     }    
     
     
     public void onStartScreen() {
-        
+        music.play();
     }
 
     public void onEndScreen() {
@@ -110,6 +118,7 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
    
     @SuppressWarnings("empty-statement")
     public void startGame(int x, int y){
+        music.stop();
         guiViewPort.removeProcessor(nifty);
         this.menu=false;  
         
