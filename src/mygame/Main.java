@@ -16,7 +16,6 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.system.JmeContext;
 import de.lessvoid.nifty.Nifty;
 import java.util.Random;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -37,7 +36,8 @@ public class Main extends SimpleApplication
     public Vector2f coord,appoggio; 
   
     //variabili per gestire i mob
-    public Vector<Mob>mob;
+   // public Vector<Mob>mob;
+    public Mob mob[]=new Mob[100];
     public int round; //round attuale
     public int n_mob; //numero mob creati
     public int r_mob; //mob rimasti 
@@ -161,19 +161,20 @@ public class Main extends SimpleApplication
            if(pg.munizioni[pg.arma]>0)
            {
              if(pg.arma==0) //se si sta usando una mitragliatrice le collisioni vengono verificate subito
-             {    
+             {   
                pg.bullet1=new BulletRapidFireGun(10f*(pg.arma+1),pg.model[pg.arma].getLocalTranslation(),cam.getDirection(),app);
                thread[2]=executor.submit(pg.bullet1.bullScene);
                thread[3]=executor.submit(pg.bullet1.bullMob);
-               while(!thread[2].isDone() || !thread[3].isDone());
+               while(!thread[2].isDone() || !thread[3].isDone());  
                   //se la collisione più vicina è quella con il mob o se è entrato in collisione solo con il mob
                if( (pg.bullet1.dist_m<pg.bullet1.dist_s && pg.bullet1.dist_m!=-1) || (pg.bullet1.dist_m!=-1 && pg.bullet1.dist_s==-1) ) 
-               {
-                  mob.elementAt(pg.bullet1.indice).healt-=pg.bullet1.damage; //decremento vita mob
-                  if(mob.elementAt(pg.bullet1.indice).healt<=0) //mob morto
+               { 
+                  mob[pg.bullet1.indice].healt-=pg.bullet1.damage; //decremento vita mob
+                  if(mob[pg.bullet1.indice].healt<=0) //mob morto
                   { 
-                     rootNode.detachChild(mob.elementAt(pg.bullet1.indice).model); //leva il mob dal vettore e dal rootNode
-                     mob.removeElementAt(pg.bullet1.indice);
+                     rootNode.detachChild(mob[pg.bullet1.indice].model); //leva il mob dal vettore e dal rootNode
+                     bullet.getPhysicsSpace().remove(mob[pg.bullet1.indice].control);
+                     mob[pg.bullet1.indice]=null;
                      r_mob--; //mob rimasti
                   }
                }
@@ -199,8 +200,8 @@ public class Main extends SimpleApplication
     private void mobCreate() //gestisce la creazione dei mob 
     {  
        Random rand=new Random(); 
-       mob.addElement(new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]));
-       rootNode.attachChild(mob.elementAt(n_mob-(round-r_mob)).controlNode);
+       mob[n_mob-(round-r_mob)]=new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]);
+       rootNode.attachChild(mob[n_mob-(round-r_mob)].model);
        n_mob++; 
     }
     
@@ -244,9 +245,9 @@ public class Main extends SimpleApplication
          { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
            // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
-             pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
+             pg.model[pg.arma].clone().collideWith(mob[i].model.clone().getWorldBound(),result); 
             if(result.size()>0)
-              pg.healt-=mob.elementAt(i).attack;
+              pg.healt-=mob[i].attack;
          }
          return null; 
       }
@@ -263,13 +264,21 @@ public class Main extends SimpleApplication
     
 //----------gameplay
     private void updateround()
-    {
-       if(mob.isEmpty())
-       {
+    {  
+       if(empty())
+       { 
           round++;
           n_mob=0;
           r_mob=round;
        }
+    }
+    
+    private boolean empty()
+    {
+        for(int i=0; i<100; i++)
+         if(mob[i]!=null)
+          return false;
+        return true;
     }
     
     @Override

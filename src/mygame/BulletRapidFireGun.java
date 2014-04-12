@@ -25,9 +25,11 @@ public class BulletRapidFireGun
       public Object call()
       {
         CollisionResults result=new CollisionResults();
-        for(int i=0; i<appl.r_mob-(appl.round-appl.n_mob); i++)
+        for(int i=0; i<100/*appl.r_mob-(appl.round-appl.n_mob)*/; i++)
         {
-           bullet_dir.clone().collideWith(appl.mob.elementAt(i).model.clone().getWorldBound(),result); 
+          if(appl.mob[i]!=null)
+          {
+           bullet_dir.clone().collideWith(appl.mob[i].model.clone().getWorldBound(),result); 
            if(result.size()>0) //trova collisione più vicina
              for(int j=0; j<result.size(); j++)
                if(result.getCollision(j).getDistance()<dist_m || dist_m==-1)
@@ -35,6 +37,7 @@ public class BulletRapidFireGun
                   dist_m=result.getCollision(j).getDistance();
                   indice=i;
                }  
+          }
         }
         return null;  
       }

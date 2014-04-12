@@ -219,7 +219,8 @@ public class StartGUIController extends AbstractAppState implements ScreenContro
     {
       public Object call()
       {
-        appl.mob=new Vector(0); 
+        for(int i=0; i<100; i++)
+          appl.mob[i]=null;  
         return null;
       }
     };
