@@ -200,7 +200,7 @@ public class Main extends SimpleApplication
     {  
        Random rand=new Random(); 
        mob.addElement(new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]));
-       rootNode.attachChild(mob.elementAt(n_mob-(round-r_mob)).model);
+       rootNode.attachChild(mob.elementAt(n_mob-(round-r_mob)).controlNode);
        n_mob++; 
     }
     

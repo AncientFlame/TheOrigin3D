@@ -47,7 +47,7 @@ public class Player
       
       model[0]=asset.loadModel("Models/braccio/braccio2.j3o");
       
-      control=new BetterCharacterControl(1.5f,6f,0.5f); //crea character control
+      control=new BetterCharacterControl(1.5f,6f,0.5f); //crea character control 1° raggio 2° altezza 3° massa
       model[0].setLocalTranslation(10,11,10); 
       model_node.setLocalTranslation(10,1.8f,10);
       model_node.addControl(control); 
