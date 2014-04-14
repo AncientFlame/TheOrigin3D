@@ -67,7 +67,7 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       r_mob=round=1; n_mob=0;
+       r_mob=round=30; n_mob=0;
        flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
@@ -90,7 +90,7 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();  
-         pg.FirstPersonCamera(cam); System.out.println(round);
+         pg.FirstPersonCamera(cam); System.out.println(pg.healt);
        }
     }
     
@@ -179,7 +179,7 @@ public class Main extends SimpleApplication
                   }
                }
              }
-             pg.munizioni[pg.arma]--;
+            // pg.munizioni[pg.arma]--;
            } else
                pg.ric();
          }
@@ -200,9 +200,16 @@ public class Main extends SimpleApplication
     private void mobCreate() //gestisce la creazione dei mob 
     {  
        Random rand=new Random(); 
-       mob[n_mob-(round-r_mob)]=new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]);
-       rootNode.attachChild(mob[n_mob-(round-r_mob)].model);
-       n_mob++; 
+       for(int i=0; i<100; i++)
+       {
+          if(mob[i]==null)
+          {
+             mob[i]=new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]);
+             rootNode.attachChild(mob[i].model);
+             n_mob++;  
+             i=101;
+          }
+       }
     }
     
     private Callable FollowPg=new Callable()
@@ -241,13 +248,16 @@ public class Main extends SimpleApplication
       public Object call()
       {
          CollisionResults result=new CollisionResults(); 
-         for(int i=0; i<r_mob-(round-n_mob); i++)
+         for(int i=0; i<100/*r_mob-(round-n_mob)*/; i++)
          { 
+            if(mob[i]!=null)
+            { 
 //le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
            // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
-             pg.model[pg.arma].clone().collideWith(mob[i].model.clone().getWorldBound(),result); 
-            if(result.size()>0)
-              pg.healt-=mob[i].attack;
+              pg.model[pg.arma].clone().collideWith(mob[i].model.clone().getWorldBound(),result); 
+             if(result.size()>0)
+               pg.healt-=mob[i].attack;
+            }
          }
          return null; 
       }
@@ -265,21 +275,14 @@ public class Main extends SimpleApplication
 //----------gameplay
     private void updateround()
     {  
-       if(empty())
+       if(r_mob==0)
        { 
           round++;
           n_mob=0;
           r_mob=round;
        }
     }
-    
-    private boolean empty()
-    {
-        for(int i=0; i<100; i++)
-         if(mob[i]!=null)
-          return false;
-        return true;
-    }
+  
     
     @Override
     public void destroy()
