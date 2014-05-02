@@ -4,7 +4,6 @@ package mygame;
 import mygame.guiController.StartGUIController;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.collision.CollisionResults;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.FastMath;
@@ -26,7 +25,7 @@ public class Main extends SimpleApplication
     private StartGUIController startController;
 
     
-    public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); //per ora ho messo massimo 10 thread contemporaneamente
+    public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10); 
     public Future thread[]=new Future[10]; //nel gameplay usati thread[0]~thread[4]
     public BulletAppState bullet; //serve per la fisica
     public Scene scena; //scena principale del gioco
@@ -38,6 +37,8 @@ public class Main extends SimpleApplication
     //variabili per gestire i mob
    // public Vector<Mob>mob;
     public Mob mob[]=new Mob[100];
+    public Vector3f mobwalkdir;
+    int indexMob=0;
     public int round; //round attuale
     public int n_mob; //numero mob creati
     public int r_mob; //mob rimasti 
@@ -67,7 +68,8 @@ public class Main extends SimpleApplication
        bullet=new BulletAppState();
        stateManager.attach(bullet);
        
-       r_mob=round=30; n_mob=0;
+       mobwalkdir=new Vector3f(0,0,0);
+       r_mob=round=1; n_mob=0;
        flyCam.setEnabled(false);
        flyCam.setMoveSpeed(0.0f);
        flyCam.setZoomSpeed(0.0f);
@@ -90,7 +92,8 @@ public class Main extends SimpleApplication
            collisionMobPg(); //collisioni mob-pg thread[1]
          }
          updateround();  
-         pg.FirstPersonCamera(cam); System.out.println(pg.healt);
+         pg.FirstPersonCamera(cam); 
+       //  System.out.println(cam.getDirection()+" "+pg.model[0].getLocalRotation().mult(pg.model[0].getLocalTranslation()).normalize());
        }
     }
     
@@ -146,7 +149,8 @@ public class Main extends SimpleApplication
            if(key.equals("A"))
             pg.setKeys(pressed,3);
            if(key.equals("jump"))
-            pg.control.jump();
+             pg.control.jump();
+
         }
     };
     
@@ -170,6 +174,7 @@ public class Main extends SimpleApplication
                if( (pg.bullet1.dist_m<pg.bullet1.dist_s && pg.bullet1.dist_m!=-1) || (pg.bullet1.dist_m!=-1 && pg.bullet1.dist_s==-1) ) 
                { 
                   mob[pg.bullet1.indice].healt-=pg.bullet1.damage; //decremento vita mob
+                  pg.punteggio+=10;
                   if(mob[pg.bullet1.indice].healt<=0) //mob morto
                   { 
                      rootNode.detachChild(mob[pg.bullet1.indice].model); //leva il mob dal vettore e dal rootNode
@@ -179,7 +184,7 @@ public class Main extends SimpleApplication
                   }
                }
              }
-            // pg.munizioni[pg.arma]--;
+             //pg.munizioni[pg.arma]--;
            } else
                pg.ric();
          }
@@ -204,7 +209,7 @@ public class Main extends SimpleApplication
        {
           if(mob[i]==null)
           {
-             mob[i]=new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)]);
+             mob[i]=new Mob(assetManager,bullet,scena.spawnPoint[rand.nextInt(4)],round,this);
              rootNode.attachChild(mob[i].model);
              n_mob++;  
              i=101;
@@ -212,57 +217,49 @@ public class Main extends SimpleApplication
        }
     }
     
-    private Callable FollowPg=new Callable()
-    {
-      public Object call()
-      {
-         return 1; 
-      }
-    };
-
-    private void mobFollowPg() 
-    {
-      if(thread[4]==null)
-        thread[4]=executor.submit(FollowPg);
-      else if(thread[4].isDone())
-           {
-              thread[4]=null; //rimesso a null per ripartire
-           }  
-    }
-    
     private void collisionMobPg() //usa thread[1]
     {
       if(thread[1]==null)
-        thread[1]=executor.submit(collisionMobPg_thread);
+        thread[1]=executor.submit(collisionMobPgThread);
       else
         if(thread[1].isDone())
         {
           if(pg.healt<=0)
             System.out.println("morto");  
-          thread[1]=null;      
+          thread[1]=null;   
         }
     }
     
-    private Callable collisionMobPg_thread=new Callable() //usa thread[1]
+    private Callable collisionMobPgThread=new Callable()
     {
       public Object call()
       {
-         CollisionResults result=new CollisionResults(); 
-         for(int i=0; i<100/*r_mob-(round-n_mob)*/; i++)
-         { 
-            if(mob[i]!=null)
-            { 
-//le collisioni vengono calcolate con i cloni dei modelli per evitare l'effetto flash del modello 
-           // pg.model[pg.arma].clone().collideWith(mob.elementAt(i).model.clone().getWorldBound(),result); 
-              pg.model[pg.arma].clone().collideWith(mob[i].model.clone().getWorldBound(),result); 
-             if(result.size()>0)
-               pg.healt-=mob[i].attack;
-            }
-         }
+         for(int i=0; i<round; i++)
+           if(mob[i]!=null)  
+             mob[i].collisionMobPg_thread();
          return null; 
       }
     };
 
+    private void mobFollowPg() 
+    {  
+       if(thread[4]==null) 
+       {
+         if(mob[indexMob]!=null)  
+          thread[4]=executor.submit(mob[indexMob].FollowPg);
+         else { indexMob++; if(indexMob>round) indexMob=0; }
+       }
+       else if(thread[4].isDone())
+            {
+              if(mob[indexMob]!=null)  
+               mob[indexMob].control.setWalkDirection(mobwalkdir);
+               thread[4]=null; //rimesso a null per ripartire
+               indexMob++;
+                if(indexMob>round) 
+                 indexMob=0;
+            }  
+    }
+    
 //----------------------gui    
     private void initStartGUI(){
         Nifty nifty = niftyDisplay.getNifty();

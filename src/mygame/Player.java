@@ -26,6 +26,7 @@ public class Player
   public int healt;
   public BulletRapidFireGun bullet1; //proiettile per mitragliatrici
   public Node model_node;
+  public int punteggio;
   Main appl;
   
    public Player(AssetManager asset,BulletAppState bullet,Main app)
@@ -34,25 +35,26 @@ public class Player
       gradi=gradi2=0;
       w=a=s=d=false;
       healt=100;
-
+      punteggio=0;
       munizioni=new int[1];
       caricatori=new int[1];
       munizioni_max=new int[1];
       caricatori_max=new int[1];
-      munizioni[0]=25; caricatori[0]=100; munizioni_max[0]=25; caricatori_max[0]=100; //arma 0
+      munizioni[0]=45; caricatori[0]=450; munizioni_max[0]=45; caricatori_max[0]=450; //arma 0
       arma=0;
       model_node=new Node("nodopg");
       cam_pos=new Vector3f(0,0,0);
       pos=new Vector3f(0,0,0);
       
       model[0]=asset.loadModel("Models/braccio/braccio2.j3o");
-      
+         
       control=new BetterCharacterControl(1.5f,6f,0.5f); //crea character control 1° raggio 2° altezza 3° massa
       model[0].setLocalTranslation(10,11,10); 
       model_node.setLocalTranslation(10,1.8f,10);
       model_node.addControl(control); 
       //model_node.attachChild(model[0]);
-      control.setGravity(new Vector3f(0,-98f,0)); //gravità 
+      control.setGravity(new Vector3f(0,-9.8f,0)); //gravità 
+      control.setJumpForce(new Vector3f(0,2.5f,0));
 
       bullet.getPhysicsSpace().add(control);
    }
@@ -82,7 +84,7 @@ public class Player
     {
         public Object call() 
         {  
-  
+       
            Vector3f app=appl.getCamera().getDirection(); //prende direzione della telecamera 
            app.set(app.x,0,app.z).multLocal(40f); 
            Vector3f app2=appl.getCamera().getLeft().multLocal(40f); //prende direzione sinistra della telecamera 
