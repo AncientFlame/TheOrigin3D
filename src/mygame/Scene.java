@@ -26,9 +26,10 @@ public class Scene
      {
       case 0: 
       {
-         Material mat=new Material(assetManager ,"Common/MatDefs/Misc/Unshaded.j3md"); //da levare quando ci saranno le texture
+         //Material mat=new Material(assetManager ,"Common/MatDefs/Misc/Unshaded.j3md"); //da levare quando ci saranno le texture
+         Material mat=new Material(assetManager ,"Materials/brick.jm3");
          mat.setColor("Color",ColorRGBA.Green); //da levare quando ci saranno le texture
-      
+         
          SceneModel=assetManager.loadModel("Models/mappa1.j3o"); //carica modello 
          SceneModel.setMaterial(mat); //da levare quando ci saranno le texture
 
