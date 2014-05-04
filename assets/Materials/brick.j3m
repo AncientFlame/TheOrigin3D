@@ -1,4 +1,4 @@
-Material My Material : Common/MatDefs/Misc/Unshaded.j3md {
+Material brick : Common/MatDefs/Misc/Unshaded.j3md {
      MaterialParameters {
         ShadowMap0 : Textures/SeamlessBrick05-normalMap.jpg
         ColorMap : Textures/SeamlessBrick05.JPG
@@ -7,9 +7,15 @@ Material My Material : Common/MatDefs/Misc/Unshaded.j3md {
         ShadowMap3 : Textures/SeamlessBrick05-normalMap.jpg
         ShadowMap4 : Textures/SeamlessBrick05-normalMap.jpg
         ShadowMap5 : Textures/SeamlessBrick05-normalMap.jpg
-        GlowMap : Repeat Textures/SeamlessBrick05-normalMap.jpg
+        GlowMap : Textures/SeamlessBrick05-normalMap.jpg
         GlowColor : 1.0 0.27058825 0.27058825 1.0
         Color : 1.0 0.93333334 0.93333334 1.0
+        ShadowIntensity : 0.0
+        FilterMode : 0
+        ShadowMapSize : 0.0
+        SeparateTexCoord : false
+        VertexColor : false
+        HardwareShadows : true
      }
     AdditionalRenderState {
     }
